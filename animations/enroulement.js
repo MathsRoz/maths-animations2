@@ -36,7 +36,7 @@ function setup() {
   }
 
   // Création des sliders
-  zoom = addSlider("Zoom", 0.5, 3, 1, 0.1);
+  zoom = addSlider("Zoom", 0.5, 3, 1.75, 0.1);
   slider1 = addSlider("Angle", -10000, 10000, 1800, 1);
   enroullement = addSlider("Prog", 0, 1000, 0, 1);
 

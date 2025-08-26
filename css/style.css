@@ -56,15 +56,13 @@ p {
   font-weight: bold;
   text-decoration: none;
   transition: 0.3s ease;
-  shadow : none;
-  border: none;              /* supprime le contour natif */
+  border: none;      
   outline: none; 
 }
 
 .p5btn:hover {
   background: #ff2e63;
   color: white;
-  
 }
 
 .p5slider {

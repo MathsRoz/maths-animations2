@@ -9,7 +9,7 @@ let panX = 0, panY = 0;
 let draggingGraph = false;
 let lastMouseX, lastMouseY;
 
-let zoom = 80;
+let zoom = 100;
 
 function setup() {
   pixelDensity(1);
@@ -102,17 +102,17 @@ function draw() {
 
   // Glow points
   stroke('red');
-  strokeWeight(hover1 ? 16 : 10);
+  strokeWeight(hover1 ? 22 : 15);
   point(p1.x * zoom, p1.y * zoom);
 
-  strokeWeight(hover2 ? 16 : 10);
+  strokeWeight(hover2 ? 22 : 15);
   point(p2.x * zoom, p2.y * zoom);
 
   // Étiquettes
   scale(1, -1);
   fill(255);
   noStroke();
-  textSize(16);
+  textSize(20);
   text("A", p1.x*zoom + 10, -p1.y*zoom - 10);
   text("B", p2.x*zoom + 10, -p2.y*zoom - 10);
   scale(1, -1);

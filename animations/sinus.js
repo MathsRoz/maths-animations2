@@ -38,7 +38,7 @@ function setup() {
   }
 
   // Sliders
-  zoom = addSlider("Zoom", 0.5, 3, 1, 0.1);
+  zoom = addSlider("Zoom", 0.5, 3, 1.75, 0.1);
   Angle = addSlider("Angle", 0, maxAngle, 0, 5);
 
   // Bouton
