@@ -100,22 +100,10 @@ function draw() {
   hover2 = dist(mx, my, p2.x, p2.y) < 0.2;
 
   // Glow points
-  if (hover1) {
-    noFill();
-    stroke(255, 50, 50, 150);
-    strokeWeight(8);
-    ellipse(p1.x * zoom, p1.y * zoom, 35, 35);
-  }
   stroke('red');
   strokeWeight(hover1 ? 16 : 10);
   point(p1.x * zoom, p1.y * zoom);
 
-  if (hover2) {
-    noFill();
-    stroke(255, 50, 50, 150);
-    strokeWeight(8);
-    ellipse(p2.x * zoom, p2.y * zoom, 35, 35);
-  }
   strokeWeight(hover2 ? 16 : 10);
   point(p2.x * zoom, p2.y * zoom);
 
