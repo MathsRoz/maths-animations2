@@ -163,35 +163,38 @@ function mouseWheel(event) {
 }
 
 
-// Variables pour pinch zoom
 let pinchStartDist = null;
 
 function touchStarted() {
-  if (touches.length === 2) {
-    // distance initiale entre les deux doigts
+  if (touches.length === 2 && isOnCanvas(touches[0]) && isOnCanvas(touches[1])) {
     pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+    return false; // empêche le scroll si vraiment un pinch sur le canvas
   }
-  return false; // empêche le scroll de la page
 }
 
 function touchMoved() {
-  if (touches.length === 2 && pinchStartDist !== null) {
+  if (touches.length === 2 && pinchStartDist !== null && 
+      isOnCanvas(touches[0]) && isOnCanvas(touches[1])) {
     let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
     let scaleFactor = newDist / pinchStartDist;
 
-    // appliquer au slider zoom
     let current = zoom.value();
     let newZoom = constrain(current * scaleFactor, 0.5, 3);
     zoom.value(newZoom);
 
-    // mettre à jour la référence pour que ça reste fluide
-    pinchStartDist = newDist;
+    pinchStartDist = newDist; // update référence
+    return false; // on bloque seulement dans ce cas
   }
-  return false; // bloque le scroll
 }
 
 function touchEnded() {
   if (touches.length < 2) {
-    pinchStartDist = null; // reset si moins de 2 doigts
+    pinchStartDist = null;
   }
 }
+
+// utilitaire : savoir si un doigt est bien sur le canvas
+function isOnCanvas(touch) {
+  return touch.x >= 0 && touch.x <= width && touch.y >= 0 && touch.y <= height;
+}
+
