@@ -12,6 +12,7 @@ let lastMouseX, lastMouseY;
 let zoom = 80;
 
 function setup() {
+  pixelDensity(1);
   // 📱 Canvas plus petit sur mobile
   if (windowWidth < 600) {
     createCanvas(windowWidth, windowHeight * 0.7);

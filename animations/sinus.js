@@ -7,6 +7,7 @@ let Angle, zoom;
 let maxAngle = 1500;
 
 function setup() {
+  pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
   // Panneau global (empile sliders et bouton)

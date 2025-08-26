@@ -5,6 +5,7 @@ let facteur = 2;
 let playBtn;
 
 function setup() {
+  pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
   // Panneau global pour empiler sliders et bouton
