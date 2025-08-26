@@ -161,3 +161,37 @@ function mouseWheel(event) {
   zoom.value(newZoom);
   return false; // empêche le scroll de la page
 }
+
+
+// Variables pour pinch zoom
+let pinchStartDist = null;
+
+function touchStarted() {
+  if (touches.length === 2) {
+    // distance initiale entre les deux doigts
+    pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+  }
+  return false; // empêche le scroll de la page
+}
+
+function touchMoved() {
+  if (touches.length === 2 && pinchStartDist !== null) {
+    let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+    let scaleFactor = newDist / pinchStartDist;
+
+    // appliquer au slider zoom
+    let current = zoom.value();
+    let newZoom = constrain(current * scaleFactor, 0.5, 3);
+    zoom.value(newZoom);
+
+    // mettre à jour la référence pour que ça reste fluide
+    pinchStartDist = newDist;
+  }
+  return false; // bloque le scroll
+}
+
+function touchEnded() {
+  if (touches.length < 2) {
+    pinchStartDist = null; // reset si moins de 2 doigts
+  }
+}
