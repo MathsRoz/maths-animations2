@@ -11,29 +11,63 @@ let lastMouseX, lastMouseY;
 
 let zoom = 100;
 
+// ✅ thème
+let themeBtn;
+let darkMode = true;
+let white, black, orange, red;
+
 function setup() {
   pixelDensity(1);
-  // 📱 Canvas plus petit sur mobile
-  if (windowWidth < 600) {
-    createCanvas(windowWidth, windowHeight * 0.7);
-  } else {
-    createCanvas(windowWidth, windowHeight);
-  }
+  createCanvas(windowWidth, windowHeight);
+  frameRate(30);
 
-  frameRate(30); // ✅ limiter à 30 FPS
+  // ✅ définir les couleurs comme dans suite_rec.js
+  white = color("#fffefdff");
+  black = color("#313130ff");
+  orange = color("#ffab51ff");
+  red = color("#e43d3dff");
+
+  // ✅ bouton clair/sombre
+  themeBtn = createButton("Mode sombre");
+  themeBtn.position(windowWidth - 200, 20);
+  themeBtn.class("p5btn");
+  themeBtn.mousePressed(toggleTheme);
+
+  let container = createDiv();
+  container.style("display", "flex");
+  container.style("align-items", "center");
+  container.style("gap", "10px");
+  container.position(20, 20);
+
+  // label f(x) =
+  let label = createSpan("f(x) =");
+  label.parent(container);
+  label.class("slider-label");
 
   // Input fonction
   inputFunc = createInput("x*x");
-  inputFunc.position(20, 20);
+  inputFunc.parent(container);
   inputFunc.size(200);
   inputFunc.input(updateFunction);
   inputFunc.class("func-input");
+  
 
   updateFunction();
 
   // Points initiaux
   p1 = createVector(-1, safeEval(-1)); 
   p2 = createVector(2, safeEval(2));   
+}
+
+function toggleTheme() {
+  darkMode = !darkMode;
+  if (darkMode) {
+    themeBtn.html("Mode sombre");
+    document.body.style.color = "white"; 
+  } else {
+    themeBtn.html("Mode clair");
+    document.body.style.color = "black";
+  }
 }
 
 function updateFunction() {
@@ -46,21 +80,25 @@ function updateFunction() {
 }
 
 function draw() {
-  background(0);
+  createCanvas(windowWidth, windowHeight);
+  if (darkMode) background(black);
+  else background(white);
+
+  themeBtn.position(windowWidth - 200, 20);
 
   translate(width/2 + panX, height/2 + panY);
   scale(1, -1);
 
   // Axes
-  stroke(255);
-  strokeWeight(1);
+  stroke(darkMode ? white : black);
+  strokeWeight(3);
   line(-width, 0, width, 0);
   line(0, -height, 0, height);
 
-  // ✅ Courbe optimisée : moins de points sur mobile
+  // Courbe
   let step = (windowWidth < 600) ? 0.05 : 0.01;
-  stroke(255);
-  strokeWeight(2);
+  stroke(darkMode ? white : black);
+  strokeWeight(3);
   noFill();
   beginShape();
   for (let x = -width/zoom; x < width/zoom; x += step) {
@@ -75,9 +113,9 @@ function draw() {
 
   let x1 = -width/zoom, x2 = width/zoom;
 
-  // Tangente en A
-  stroke('orange');
-  strokeWeight(2);
+  // Tangente
+  stroke(orange);
+  strokeWeight(3);
   drawingContext.setLineDash([6]);
   let h = 0.0001;
   let slopeT = (safeEval(p1.x+h) - safeEval(p1.x-h)) / (2*h);
@@ -87,8 +125,8 @@ function draw() {
   drawingContext.setLineDash([]);
 
   // Sécante
-  stroke("red");
-  strokeWeight(2);
+  stroke(red);
+  strokeWeight(3);
   let slopeSec = (p2.y - p1.y) / (p2.x - p1.x + 1e-9);
   let y1 = p1.y + slopeSec * (x1 - p1.x);
   let y2 = p1.y + slopeSec * (x2 - p1.x);
@@ -100,31 +138,25 @@ function draw() {
   hover1 = dist(mx, my, p1.x, p1.y) < 0.2;
   hover2 = dist(mx, my, p2.x, p2.y) < 0.2;
 
-  // Glow points
-  stroke('red');
+  stroke(red);
   strokeWeight(hover1 ? 22 : 15);
   point(p1.x * zoom, p1.y * zoom);
-
   strokeWeight(hover2 ? 22 : 15);
   point(p2.x * zoom, p2.y * zoom);
 
   // Étiquettes
   scale(1, -1);
-  fill(255);
-  noStroke();
+  fill(darkMode ? white : black);
+  stroke(darkMode ? black : white);
+  strokeWeight(3);
   textSize(20);
   text("A", p1.x*zoom + 10, -p1.y*zoom - 10);
   text("B", p2.x*zoom + 10, -p2.y*zoom - 10);
   scale(1, -1);
 
-  // Curseur adapté
-  if (hover1 || hover2) {
-    cursor("pointer");
-  } else if (draggingGraph) {
-    cursor("grabbing");
-  } else {
-    cursor("default");
-  }
+  if (hover1 || hover2) cursor("pointer");
+  else if (draggingGraph) cursor("grabbing");
+  else cursor("default");
 }
 
 function mousePressed() {
