@@ -227,6 +227,7 @@ function drawCobweb() {
   stroke(black);
   textAlign(CENTER,TOP);
   textSize(28/zoom);
+  textFont("delius");
   text("u₀",x,y+10/zoom);
   pop();
   for (let i = 0; i < n ; i++) {

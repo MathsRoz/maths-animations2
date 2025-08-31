@@ -17,6 +17,7 @@ let pinchStartDist = null;
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+  
 
   // ✅ définir les couleurs
   white = color("#fffefdff");
@@ -95,6 +96,7 @@ function draw() {
   textSize(50);
   fill(darkMode ? white : black);
   stroke(darkMode ? black : white);
+  textFont("delius");
   text("sin(x) ", 350, 65);
   pop();
 

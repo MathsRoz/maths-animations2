@@ -82,6 +82,7 @@ function toggleTheme() {
 }
 
 function draw() {
+  createCanvas(windowWidth, windowHeight);
   facteur = zoom.value();
   valNSpan.html(slider1.value()/1000+" rad");
   if (darkMode) background(black);
