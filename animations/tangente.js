@@ -221,53 +221,7 @@ function mouseWheel(event) {
   return false;
 }
 
-// Touch events pour smartphone
-function touchStarted() {
-  if (document.activeElement.tagName === "INPUT") return false;
 
-  let mx = (mouseX - width/2 - panX) / zoom;
-  let my = -(mouseY - height/2 - panY) / zoom;
-
-  let dA = dist(mx, my, p1.x, p1.y);
-  let dB = dist(mx, my, p2.x, p2.y);
-
-  if (dA < 0.2 && dA <= dB) {
-    dragging1 = true;
-  } else if (dB < 0.2 && dB < dA) {
-    dragging2 = true;
-  } else {
-    draggingGraph = true;
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
-    cursor("grabbing");
-  }
-  return false; // évite scroll de la page
-}
-
-function touchMoved() {
-  if (document.activeElement.tagName === "INPUT") return false;
-
-  let mx = (mouseX - width/2 - panX) / zoom;
-
-  if (dragging1) p1.x = mx;
-  if (dragging2) p2.x = mx;
-
-  if (draggingGraph) {
-    panX += mouseX - lastMouseX;
-    panY += mouseY - lastMouseY;
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
-  }
-  return false; // bloque scroll
-}
-
-function touchEnded() {
-  dragging1 = false;
-  dragging2 = false;
-  draggingGraph = false;
-  cursor("default");
-  return false;
-}
 
 
 function safeEval(x) {
@@ -278,4 +232,92 @@ function safeEval(x) {
   }
 }
 
+
+let pinchStartDist = null; // distance initiale entre 2 doigts
+let pinchCenter = null;    // centre du pinch
+
+function touchStarted() {
+  if (document.activeElement.tagName === "INPUT") return false;
+
+  if (touches.length === 1) {
+    // --- Un seul doigt : drag des points / graphe ---
+    let mx = (mouseX - width/2 - panX) / zoom;
+    let my = -(mouseY - height/2 - panY) / zoom;
+
+    let dA = dist(mx, my, p1.x, p1.y);
+    let dB = dist(mx, my, p2.x, p2.y);
+
+    if (dA < 0.2 && dA <= dB) {
+      dragging1 = true;
+    } else if (dB < 0.2 && dB < dA) {
+      dragging2 = true;
+    } else {
+      draggingGraph = true;
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
+      cursor("grabbing");
+    }
+  } else if (touches.length === 2) {
+    // --- Deux doigts : pinch zoom ---
+    pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+    pinchCenter = {
+      x: (touches[0].x + touches[1].x) / 2,
+      y: (touches[0].y + touches[1].y) / 2
+    };
+  }
+  return false;
+}
+
+function touchMoved() {
+  if (document.activeElement.tagName === "INPUT") return false;
+
+  if (touches.length === 1) {
+    // --- Drag classique ---
+    let mx = (mouseX - width/2 - panX) / zoom;
+    if (dragging1) p1.x = mx;
+    if (dragging2) p2.x = mx;
+
+    if (draggingGraph) {
+      panX += mouseX - lastMouseX;
+      panY += mouseY - lastMouseY;
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
+    }
+  } else if (touches.length === 2 && pinchStartDist !== null) {
+    // --- Pinch zoom ---
+    let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+    let scaleFactor = newDist / pinchStartDist;
+
+    // Coordonnées monde du centre de pinch
+    let worldX = (pinchCenter.x - width/2 - panX) / zoom;
+    let worldY = -(pinchCenter.y - height/2 - panY) / zoom;
+
+    // Nouveau zoom
+    let newZoom = constrain(zoom * scaleFactor, 20, 500);
+
+    // Ajustement pan pour garder le centre fixe
+    let newScreenX = worldX * newZoom;
+    let newScreenY = worldY * newZoom;
+    let oldScreenX = worldX * zoom;
+    let oldScreenY = worldY * zoom;
+
+    panX += oldScreenX - newScreenX;
+    panY += -(oldScreenY - newScreenY);
+
+    zoom = newZoom;
+    pinchStartDist = newDist; // reset distance de référence
+  }
+
+  return false;
+}
+
+function touchEnded() {
+  dragging1 = false;
+  dragging2 = false;
+  draggingGraph = false;
+  pinchStartDist = null;
+  pinchCenter = null;
+  cursor("default");
+  return false;
+}
 
