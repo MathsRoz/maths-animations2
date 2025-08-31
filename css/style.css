@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+  font-family: "Delius", "SEGOE UI", sans-serif;
+  background:  #313130ff;
   color: white;
   text-align: center;
 }
@@ -24,12 +24,14 @@ p {
 
 .buttons {
   display: flex;
+  font-family: "Delius", sans-serif;
   justify-content: center;
   gap: 20px;
 }
 
 .btn {
   display: inline-block;
+  font-family: "Delius", sans-serif;
   padding: 12px 12px;
   border-radius: 15px;
   background: #ffaf03;
@@ -49,6 +51,7 @@ p {
 
 .p5btn {
   display: flex;
+  font-family: "Delius", sans-serif;
   padding: 12px 12px 12px 12px;
   border-radius: 10px;
   background: #ffaf03;
@@ -138,7 +141,7 @@ p {
 .func-input {
   padding: 8px 12px;
   font-size: 16px;
-  font-family: "Segoe UI", Roboto, sans-serif;
+  font-family: "Delius", sans-serif;
   border: 2px solid #cc8b00;
   border-radius: 6px;
   outline: none;

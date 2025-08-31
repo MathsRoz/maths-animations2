@@ -186,7 +186,7 @@ function drawAxes() {
 
   stroke(darkMode ? white: black);
   strokeWeight(3/zoom);
-  line(-width/zoom, -width/zoom, width/zoom, width/zoom);
+  line(-20*width/zoom, -20*width/zoom, 20*width/zoom, 20*width/zoom);
 }
 
 function drawFunction() {
@@ -197,7 +197,7 @@ function drawFunction() {
   noFill();
   beginShape();
   let step = 1/zoom;
-  for (let x = -width/(zoom); x < width/(zoom); x += step) {
+  for (let x = -20*width/(zoom); x < 20*width/(zoom); x += step) {
     let y = exprFunc(x);
     if (isFinite(y)) vertex(x, y);
   }
@@ -218,12 +218,12 @@ function drawCobweb() {
   scale(1,-1);
   fill(orange);
   stroke(black);
-  circle(x,y,14/zoom);
+  circle(x,y,12/zoom);
   stroke(orange)
   fill(orange);
   circle(x,y,8/zoom);
   
-  strokeWeight(6/zoom);
+  strokeWeight(4/zoom);
   stroke(black);
   textAlign(CENTER,TOP);
   textSize(28/zoom);
