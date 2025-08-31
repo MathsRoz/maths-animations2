@@ -213,12 +213,18 @@ function drawCobweb() {
 
   let x = u;
   let y = 0;
-  let fx = exprFunc(x);
-  line(x, y, x, fx); 
+  
   push();
   scale(1,-1);
   fill(orange);
-  noStroke();
+  stroke(black);
+  circle(x,y,14/zoom);
+  stroke(orange)
+  fill(orange);
+  circle(x,y,8/zoom);
+  
+  strokeWeight(6/zoom);
+  stroke(black);
   textAlign(CENTER,TOP);
   textSize(28/zoom);
   text("u₀",x,y+10/zoom);
