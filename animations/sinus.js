@@ -80,6 +80,7 @@ function toggleTheme() {
 }
 
 function draw() {
+  createCanvas(windowWidth, windowHeight);
   if (darkMode) background(black);
   else background(white);
 

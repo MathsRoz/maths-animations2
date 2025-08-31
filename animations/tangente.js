@@ -55,8 +55,8 @@ function setup() {
   updateFunction();
 
   // Points initiaux
-  p1 = createVector(-1, safeEval(-1)); 
-  p2 = createVector(2, safeEval(2));   
+  p1 = createVector(-.5, safeEval(-.5)); 
+  p2 = createVector(1, safeEval(1));   
 }
 
 function toggleTheme() {
@@ -91,7 +91,7 @@ function draw() {
 
   // Axes
   stroke(darkMode ? white : black);
-  strokeWeight(3);
+  strokeWeight(2);
   line(-width, 0, width, 0);
   line(0, -height, 0, height);
 

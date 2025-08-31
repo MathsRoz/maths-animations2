@@ -12,6 +12,7 @@ let darkMode = true; // ✅ thème par défaut
 let white, black, orange, red;
 
 function setup() {
+  pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
   // bouton clair/sombre en haut à droite
