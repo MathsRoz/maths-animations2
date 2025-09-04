@@ -3,17 +3,15 @@ let panX = 0, panY = 0;
 let dragging = false;
 let lastMouseX, lastMouseY;
 let pinchStartDist = null;
-let inputFunc;
-let exprFunc;
 let sliderU0, sliderN;
 let valU0Span, valNSpan;
 let themeBtn;
 let darkMode = true; // ✅ thème par défaut
-let white, black, orange, red, vert;
-let boutton;
-let afficher = false;
-let fr = 0;
-
+let white, black, orange, red,lightgray, darkgray;
+let a=1;
+let b=0;
+let c=0;
+let A,B,C;
 
 function setup() {
   pixelDensity(1);
@@ -25,31 +23,13 @@ function setup() {
   themeBtn.class("p5btn");
   themeBtn.mousePressed(toggleTheme);
 
-  // conteneur horizontal pour fonction
-  let container = createDiv();
-  container.style("display", "flex");
-  container.style("align-items", "center");
-  container.style("gap", "10px");
-  container.position(20, 20);
-
-  // label f(x) =
-  let label = createSpan("f(x) =");
-  label.parent(container);
-  label.class("slider-label");
-
-  // input fonction
-  inputFunc = createInput("0.5*x+3");
-  inputFunc.parent(container);
-  inputFunc.size(200);
-  inputFunc.class("func-input");
-  inputFunc.input(updateFunction);
-
+  
   // conteneur sliders
   let panel = createDiv();
   panel.style("display", "flex");
   panel.style("flex-direction", "column");
   panel.style("gap", "10px");
-  panel.position(20, 60);
+  panel.position(20, 20);
 
   // slider u0
   let contU0 = createDiv();
@@ -57,13 +37,13 @@ function setup() {
   contU0.style("align-items", "center");
   contU0.style("gap", "10px");
   contU0.parent(panel);
-  let labU0 = createSpan("u₀ :");
+  let labU0 = createSpan("a :");
   labU0.parent(contU0);
   labU0.class("slider-label");
-  sliderU0 = createSlider(-5, 5, 1, 0.1);
+  sliderU0 = createSlider(-5, 5, 2, 0.1);
   sliderU0.parent(contU0);
   sliderU0.class("p5slider");
-  sliderU0.size(200);
+  sliderU0.size(windowWidth/5);
   valU0Span = createSpan(sliderU0.value());
   valU0Span.parent(contU0);
   valU0Span.style("min-width", "40px");
@@ -77,10 +57,10 @@ function setup() {
   contN.style("gap", "10px");
   contN.parent(panel);
   
-  sliderN = createSlider(0, 10, 0, 0.01);
+  sliderN = createSlider(-5, 5, 3, 0.1);
   sliderN.class("p5slider");
-  sliderN.size(200);
-  let labN = createSpan("n :");
+  sliderN.size(windowWidth/5);
+  let labN = createSpan("α :");
   labN.class("slider-label");
   labN.parent(contN);
   sliderN.parent(contN);
@@ -90,44 +70,50 @@ function setup() {
   valNSpan.style("text-align", "left");
   valNSpan.class("slider-value");
 
-  boutton = createButton("Afficher Un");
-  boutton.parent(panel);
-  boutton.class("p5btn");
-  boutton.mousePressed(affun);
 
+   // slider n
+  let contC = createDiv();
+  contC.style("display", "flex");
+  contC.style("align-items", "center");
+  contC.style("gap", "10px");
+  contC.parent(panel);
+  
+  sliderC = createSlider(-5, 5, 1, 0.1);
+  sliderC.class("p5slider");
+  sliderC.size(windowWidth/5);
+  let labC = createSpan("β :");
+  labC.class("slider-label");
+  labC.parent(contC);
+  sliderC.parent(contC);
+  valCSpan = createSpan(sliderC.value());
+  valCSpan.parent(contC);
+  valCSpan.style("min-width", "40px");
+  valCSpan.style("text-align", "left");
+  valCSpan.class("slider-value");
 
-  white = color("#eefdffff");
+  white = color("#fffefdff");
   black = color("#313130ff");
   orange = color("#ffab51ff");
   red = color("#e43d3dff");
-  vert = color("#1dac35ff");
-  updateFunction();
-
-
+  lightgray = color("#ddddddff");
+  darkgray = color("#474747ff");
 
   panX=-200;
   panY=200;
-}
 
+
+}
 function toggleTheme() {
   darkMode = !darkMode;
   if (darkMode) {
     themeBtn.html("Mode sombre");
-    document.body.style.color = "white"; 
+    document.body.style.color = white; 
   } else {
     themeBtn.html(" Mode clair");
-    document.body.style.color = "black";
+    document.body.style.color = black;
   }
 }
 
-function updateFunction() {
-  try {
-    let expr = inputFunc.value();
-    exprFunc = new Function("x", "with(Math){ return " + expr + "; }");
-  } catch {
-    exprFunc = (x) => NaN;
-  }
-}
 
 function draw() {
   createCanvas(windowWidth, windowHeight);
@@ -135,21 +121,22 @@ function draw() {
   else background(white);
   themeBtn.position(windowWidth - 200, 20);
   valU0Span.html(sliderU0.value());
-  valNSpan.html(int(sliderN.value()-.5));
+  valNSpan.html(sliderN.value());
+  valCSpan.html(sliderC.value());
   
-
-  
-
   translate(width/2 + panX, height/2 + panY);
   scale(zoom, -zoom);
 
+
   drawAxes();
   drawFunction();
-  
-  drawCobweb();
-  drawun();
+  drawLines();
+  showfunc();
   
 }
+
+
+
 
 function drawAxes() {
   stroke(darkMode ? white  : black );
@@ -157,7 +144,7 @@ function drawAxes() {
   line(-width, 0, width, 0);
   line(0, -height, 0, height);
 
-  fill(darkMode ? (32,36,39) : (255,241,243));
+  fill(darkMode ? black: white);
   textSize(14/zoom);
   textAlign(CENTER,CENTER);
 
@@ -165,24 +152,43 @@ function drawAxes() {
 
   for (let i = -int(width/(0.5*zoom)); i <= int(width/(0.5*zoom)); i++) {
     if (i % step === 0 && i !== 0) {
+      
+      
+      
+      push();
+      strokeWeight(2/zoom);
+      stroke(darkMode ? darkgray : lightgray );
+      line(i,-width/0.2*zoom, i, width/0.2*zoom);
+      pop();
+
       line(i, -5/zoom, i, 5/zoom);
+
       push();
       scale(1,-1);
       noStroke();
       textSize(20/zoom);
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      fill(darkMode ? white : black);
       text(i, i, 20/zoom);
       pop();
     }
   }
 
-  for (let j = -int(height/(zoom)); j <= int(height/(zoom)); j++) {
+  for (let j = -int(height/(0.2*zoom)); j <= int(height/(0.2*zoom)); j++) {
     if (j % step === 0 && j !== 0) {
+
+      push();
+      strokeWeight(2/zoom);
+      stroke(darkMode ? darkgray : lightgray );
+      line(-width/0.2*zoom,j, width/0.2*zoom,j);
+      pop();
+
       line(-5/zoom, j, 5/zoom, j);
+      
+
       push();
       scale(1,-1);
-      noStroke();
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      stroke(darkMode ?   black: white);
+      fill(!darkMode ?   black: white);
       textAlign(RIGHT,CENTER);
       textSize(20/zoom);
       text(j, -8/zoom, -j);
@@ -193,7 +199,7 @@ function drawAxes() {
   push();
       scale(1,-1);
       noStroke();
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      fill(darkMode ? (255,241,243) : (32,36,39));
       textAlign(RIGHT,CENTER);
       textSize(20/zoom);
       text(0,-8/zoom,20/zoom);
@@ -202,95 +208,41 @@ function drawAxes() {
 
   stroke(darkMode ? white: black);
   strokeWeight(3/zoom);
-  line(-20*width/zoom, -20*width/zoom, 20*width/zoom, 20*width/zoom);
 }
 
 function drawFunction() {
-  if (!exprFunc) return;
+  a=sliderU0.value();
+  b=sliderN.value();
+  c=sliderC.value();
   stroke(323,72,85);
-  stroke(red)
+  stroke(red);
   strokeWeight(3/zoom);
   noFill();
   beginShape();
   let step = 1/zoom;
   for (let x = -20*width/(zoom); x < 20*width/(zoom); x += step) {
-    let y = exprFunc(x);
+    let y = a*(x-b)*(x-b)+c;
     if (isFinite(y)) vertex(x, y);
   }
   endShape();
 }
 
-
-function drawun(){
-  let u = sliderU0.value();
-  push();
+function drawLines() {
+  
+  drawingContext.setLineDash([5/zoom, 5/zoom]);
+  stroke(orange);
+  line(b,0,b,c);
+  line(0,c,b,c);
+  drawingContext.setLineDash([]);
+  textSize(30/zoom);
+  stroke(black);
+  strokeWeight(3/zoom);
   scale(1,-1);
   fill(orange);
-  stroke(black);
-  circle(u,0,12/zoom);
-  stroke(orange)
-  fill(orange);
-  circle(u,0,8/zoom);
-  strokeWeight(4/zoom);
-  stroke(black);
-  textAlign(CENTER,TOP);
-  textSize(28/zoom);
-  textFont("delius");
-  text("u₀",u,10/zoom);
-  pop();
-}
-
-
-function drawCobweb() {
-  let u = sliderU0.value();
-  let n = sliderN.value();
-
-  stroke(orange);
-  strokeWeight(3/zoom);
-
-  let x = u;
-  let y = 0;
-  
-  
-  let fx = exprFunc(x);
-  line(x, y, x, n<1 ? y+(fx-y)*(n%1) : fx);
-  for (let i = 1; i < n ; i++) {
-    
-    line(x, fx, i>n-.5 ? x+(fx-x)*2*(n%0.5): fx, fx);
-    y = fx;
-    x = fx;
-    fx = exprFunc(x);
-    
-    
-    
-    if(i<=n-.5 && afficher){
-      push();
-    strokeWeight(2/zoom);
-      drawingContext.setLineDash([10/zoom, 5/zoom]);
-      stroke(vert);
-      line(x, y, x, 0) 
-    scale(1,-1);
-    
-    drawingContext.setLineDash([]);
-    textAlign(CENTER,TOP);
-    strokeWeight(4/zoom);
-    textSize(28/zoom);
-    stroke(black);
-    fill(vert);
-    textFont("delius");
-    text(("u"),x,10/zoom);
-    textSize(14/zoom);
-    textAlign(LEFT,LEFT);
-    text((i),x+10/zoom,25/zoom);
-
-    pop();
-    }
-    line(x, y, x, i>n-1 && n%1>.5? x+(fx-x)*2*((n-.5)%0.5): i>n-1 ? NaN:fx );
-    
-    
-  }
-
-  
+  textAlign(TOP,TOP);
+  text("α",b,10/zoom);
+  textAlign(RIGHT,CENTER);
+  text("β",-10/zoom,-c);
 }
 
 function isOverElement(elt) {
@@ -300,8 +252,7 @@ function isOverElement(elt) {
 }
 
 function mousePressed() {
-  if (isOverElement(inputFunc.elt) || 
-      isOverElement(sliderU0.elt) || 
+  if (isOverElement(sliderU0.elt) || 
       isOverElement(sliderN.elt)) {
     return;
   }
@@ -311,8 +262,6 @@ function mousePressed() {
     lastMouseX = mouseX;
     lastMouseY = mouseY;
   }
-
-  
 }
 
 function mouseDragged() {
@@ -326,12 +275,6 @@ function mouseDragged() {
 
 function mouseReleased() {
   dragging = false;
-  let rawN = sliderN.value()+.5;
-  let nearestInt = round(rawN);
-  let tol = 0.3; // tu peux ajuster la tolérance
-  if (abs(rawN - nearestInt) < tol) {
-    sliderN.value(nearestInt-.5);
-  }
 }
 
 function mouseWheel(event) {
@@ -354,8 +297,7 @@ function mouseWheel(event) {
 
 function touchStarted() {
   if (touches.length === 1) {
-    if (isOverElement(inputFunc.elt) || 
-        isOverElement(sliderU0.elt) || 
+    if (isOverElement(sliderU0.elt) || 
         isOverElement(sliderN.elt)) {
       return;
     }
@@ -380,12 +322,6 @@ function touchMoved() {
 function touchEnded() {
   if (touches.length < 2) pinchStartDist = null;
   if (touches.length === 0) dragging = false;
-   let rawN = sliderN.value()+.5;
-  let nearestInt = round(rawN);
-  let tol = 0.3; // tu peux ajuster la tolérance
-  if (abs(rawN - nearestInt) < tol) {
-    sliderN.value(nearestInt-.5);
-  }
 }
 
 function getStep() {
@@ -394,15 +330,21 @@ function getStep() {
   else return 10;
 }
 
-
-
-
-function affun() {
-  if (!afficher){
-  afficher = true
-  boutton.html("Cacher Un");}
-  else{
-    afficher = false;
-    boutton.html("Afficher Un");
-  }
+function showfunc(){
+  
+  b===0 ? B="" : b>0 ? B = "-"+str(b) : B="+"+str(-b);
+  c===0 ? C="" : c>0 ? C = "+"+str(c) : C=str(c);
+  a===1 ? A="" : A=str(a);
+  stroke(darkMode ? white : black);
+  fill(darkMode ? white : black);
+  strokeWeight(6);
+  stroke(darkMode ? black: white);
+  textSize(width/20);
+  scale(1/zoom, 1/zoom);
+  translate(-width/2 - panX, -height/2 - panY);
+  textAlign(LEFT,TOP);
+  push();
+  textFont("Delius Swash Caps");
+  a===0 ?text("f(x)=0",20,120) : b===0 ? text("f(x)="+A+"x²"+C,20,120) : text("f(x)="+A+"(x"+B+")²"+C,20,120);
+  pop();
 }

@@ -11,7 +11,7 @@ body {
 }
 
 h1 {
-  font-size: 4rem;
+  font-size: 2.5rem;
   margin-bottom: 20px;
   color: #ffd369;
 
@@ -65,6 +65,8 @@ p {
   outline: none; 
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.582);
 }
+
+
 
 .p5btn:hover {
   background: #105231;
