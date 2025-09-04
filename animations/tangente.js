@@ -22,10 +22,7 @@ function setup() {
   frameRate(30);
 
   // ✅ définir les couleurs comme dans suite_rec.js
-  white = color("#fffefdff");
-  black = color("#313130ff");
-  orange = color("#ffab51ff");
-  red = color("#e43d3dff");
+  couleur();
 
   // ✅ bouton clair/sombre
   themeBtn = createButton("Mode sombre");

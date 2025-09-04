@@ -20,10 +20,7 @@ function setup() {
   
 
   // ✅ définir les couleurs
-  white = color("#fffefdff");
-  black = color("#313130ff");
-  orange = color("#ffab51ff");
-  red = color("#e43d3dff");
+  couleur();
 
   // ✅ bouton clair/sombre
   themeBtn = createButton("Mode sombre");

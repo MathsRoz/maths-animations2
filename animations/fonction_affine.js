@@ -3,17 +3,16 @@ let panX = 0, panY = 0;
 let dragging = false;
 let lastMouseX, lastMouseY;
 let pinchStartDist = null;
-let inputFunc;
-let exprFunc;
 let sliderU0, sliderN;
 let valU0Span, valNSpan;
 let themeBtn;
 let darkMode = true; // ✅ thème par défaut
-let white, black, orange, red, vert;
-let boutton;
-let afficher = false;
-let fr = 0;
-
+let white, black, orange, red,lightgray, darkgray;
+let a=1;
+let b=0;
+let A,B;
+let mx=0; 
+let my=b;
 
 function setup() {
   pixelDensity(1);
@@ -25,31 +24,13 @@ function setup() {
   themeBtn.class("p5btn");
   themeBtn.mousePressed(toggleTheme);
 
-  // conteneur horizontal pour fonction
-  let container = createDiv();
-  container.style("display", "flex");
-  container.style("align-items", "center");
-  container.style("gap", "10px");
-  container.position(20, 20);
-
-  // label f(x) =
-  let label = createSpan("f(x) =");
-  label.parent(container);
-  label.class("slider-label");
-
-  // input fonction
-  inputFunc = createInput("0.5*x+3");
-  inputFunc.parent(container);
-  inputFunc.size(200);
-  inputFunc.class("func-input");
-  inputFunc.input(updateFunction);
-
+  
   // conteneur sliders
   let panel = createDiv();
   panel.style("display", "flex");
   panel.style("flex-direction", "column");
   panel.style("gap", "10px");
-  panel.position(20, 60);
+  panel.position(20, 20);
 
   // slider u0
   let contU0 = createDiv();
@@ -57,13 +38,13 @@ function setup() {
   contU0.style("align-items", "center");
   contU0.style("gap", "10px");
   contU0.parent(panel);
-  let labU0 = createSpan("u₀ :");
+  let labU0 = createSpan("a :");
   labU0.parent(contU0);
   labU0.class("slider-label");
-  sliderU0 = createSlider(-5, 5, 1, 0.1);
+  sliderU0 = createSlider(-5, 5, 2, 0.1);
   sliderU0.parent(contU0);
   sliderU0.class("p5slider");
-  sliderU0.size(200);
+  sliderU0.size(windowWidth/5);
   valU0Span = createSpan(sliderU0.value());
   valU0Span.parent(contU0);
   valU0Span.style("min-width", "40px");
@@ -77,10 +58,10 @@ function setup() {
   contN.style("gap", "10px");
   contN.parent(panel);
   
-  sliderN = createSlider(0, 10, 0, 0.01);
+  sliderN = createSlider(-5, 5, 3, 0.1);
   sliderN.class("p5slider");
-  sliderN.size(200);
-  let labN = createSpan("n :");
+  sliderN.size(windowWidth/5);
+  let labN = createSpan("b :");
   labN.class("slider-label");
   labN.parent(contN);
   sliderN.parent(contN);
@@ -90,40 +71,31 @@ function setup() {
   valNSpan.style("text-align", "left");
   valNSpan.class("slider-value");
 
-  boutton = createButton("Afficher Un");
-  boutton.parent(panel);
-  boutton.class("p5btn");
-  boutton.mousePressed(affun);
 
-
-  couleur();
-  updateFunction();
-
+   // slider n
+  let contC = createDiv();
+  contC.style("display", "flex");
+  contC.style("align-items", "center");
+  contC.style("gap", "10px");
+  contC.parent(panel);
 
 
   panX=-200;
   panY=200;
-}
 
+  couleur();
+}
 function toggleTheme() {
   darkMode = !darkMode;
   if (darkMode) {
     themeBtn.html("Mode sombre");
-    document.body.style.color = "white"; 
+    document.body.style.color = white; 
   } else {
     themeBtn.html(" Mode clair");
-    document.body.style.color = "black";
+    document.body.style.color = black;
   }
 }
 
-function updateFunction() {
-  try {
-    let expr = inputFunc.value();
-    exprFunc = new Function("x", "with(Math){ return " + expr + "; }");
-  } catch {
-    exprFunc = (x) => NaN;
-  }
-}
 
 function draw() {
   createCanvas(windowWidth, windowHeight);
@@ -131,21 +103,22 @@ function draw() {
   else background(white);
   themeBtn.position(windowWidth - 200, 20);
   valU0Span.html(sliderU0.value());
-  valNSpan.html(int(sliderN.value()-.5));
-  
+  valNSpan.html(sliderN.value());
 
   
-
   translate(width/2 + panX, height/2 + panY);
   scale(zoom, -zoom);
 
+
   drawAxes();
   drawFunction();
-  
-  drawCobweb();
-  drawun();
+  drawLines();
+  showfunc();
   
 }
+
+
+
 
 function drawAxes() {
   stroke(darkMode ? white  : black );
@@ -153,7 +126,7 @@ function drawAxes() {
   line(-width, 0, width, 0);
   line(0, -height, 0, height);
 
-  fill(darkMode ? (32,36,39) : (255,241,243));
+  fill(darkMode ? black: white);
   textSize(14/zoom);
   textAlign(CENTER,CENTER);
 
@@ -161,24 +134,43 @@ function drawAxes() {
 
   for (let i = -int(width/(0.5*zoom)); i <= int(width/(0.5*zoom)); i++) {
     if (i % step === 0 && i !== 0) {
+      
+      
+      
+      push();
+      strokeWeight(2/zoom);
+      stroke(darkMode ? darkgray : lightgray );
+      line(i,-width/0.2*zoom, i, width/0.2*zoom);
+      pop();
+
       line(i, -5/zoom, i, 5/zoom);
+
       push();
       scale(1,-1);
       noStroke();
       textSize(20/zoom);
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      fill(darkMode ? white : black);
       text(i, i, 20/zoom);
       pop();
     }
   }
 
-  for (let j = -int(height/(zoom)); j <= int(height/(zoom)); j++) {
+  for (let j = -int(height/(0.2*zoom)); j <= int(height/(0.2*zoom)); j++) {
     if (j % step === 0 && j !== 0) {
+
+      push();
+      strokeWeight(2/zoom);
+      stroke(darkMode ? darkgray : lightgray );
+      line(-width/0.2*zoom,j, width/0.2*zoom,j);
+      pop();
+
       line(-5/zoom, j, 5/zoom, j);
+      
+
       push();
       scale(1,-1);
-      noStroke();
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      stroke(darkMode ?   black: white);
+      fill(!darkMode ?   black: white);
       textAlign(RIGHT,CENTER);
       textSize(20/zoom);
       text(j, -8/zoom, -j);
@@ -189,7 +181,7 @@ function drawAxes() {
   push();
       scale(1,-1);
       noStroke();
-      fill(darkMode ? (255,241,243) : (32,36,39))
+      fill(darkMode ? (255,241,243) : (32,36,39));
       textAlign(RIGHT,CENTER);
       textSize(20/zoom);
       text(0,-8/zoom,20/zoom);
@@ -198,94 +190,46 @@ function drawAxes() {
 
   stroke(darkMode ? white: black);
   strokeWeight(3/zoom);
-  line(-20*width/zoom, -20*width/zoom, 20*width/zoom, 20*width/zoom);
 }
 
 function drawFunction() {
-  if (!exprFunc) return;
+  a=sliderU0.value();
+  b=sliderN.value();
   stroke(323,72,85);
-  stroke(red)
+  stroke(red);
   strokeWeight(3/zoom);
   noFill();
   beginShape();
   let step = 1/zoom;
-  for (let x = -20*width/(zoom); x < 20*width/(zoom); x += step) {
-    let y = exprFunc(x);
+  for (let x = -(width/2+panX)/(zoom); x < (width/2-panX)/(zoom); x += step) {
+    let y = a*x+b;
     if (isFinite(y)) vertex(x, y);
   }
   endShape();
+  
 }
 
-
-function drawun(){
-  let u = sliderU0.value();
-  push();
-  scale(1,-1);
-  fill(orange);
-  stroke(black);
-  circle(u,0,12/zoom);
-  stroke(orange)
-  fill(orange);
-  circle(u,0,8/zoom);
-  strokeWeight(4/zoom);
-  stroke(black);
-  textAlign(CENTER,TOP);
-  textSize(28/zoom);
-  textFont("delius");
-  text("u₀",u,10/zoom);
-  pop();
-}
-
-
-function drawCobweb() {
-  let u = sliderU0.value();
-  let n = sliderN.value();
-
+function drawLines() {
+  drawingContext.setLineDash([5/zoom, 5/zoom]);
   stroke(orange);
+  line(0,b,1,b);
+  a!==0 ? line(1,b,1,a*1+b): a ;
+  
+  drawingContext.setLineDash([]);
+  textSize(24/zoom);
+  stroke(black);
   strokeWeight(3/zoom);
+  scale(1,-1);
 
-  let x = u;
-  let y = 0;
-  
-  
-  let fx = exprFunc(x);
-  line(x, y, x, n<1 ? y+(fx-y)*(n%1) : fx);
-  for (let i = 1; i < n ; i++) {
-    
-    line(x, fx, i>n-.5 ? x+(fx-x)*2*(n%0.5): fx, fx);
-    y = fx;
-    x = fx;
-    fx = exprFunc(x);
-    
-    
-    
-    if(i<=n-.5 && afficher){
-      push();
-    strokeWeight(2/zoom);
-      drawingContext.setLineDash([10/zoom, 5/zoom]);
-      stroke(vert);
-      line(x, y, x, 0) 
-    scale(1,-1);
-    
-    drawingContext.setLineDash([]);
-    textAlign(CENTER,TOP);
-    strokeWeight(4/zoom);
-    textSize(28/zoom);
-    stroke(black);
-    fill(vert);
-    textFont("delius");
-    text(("u"),x,10/zoom);
-    textSize(14/zoom);
-    textAlign(LEFT,LEFT);
-    text((i),x+10/zoom,25/zoom);
 
-    pop();
-    }
-    line(x, y, x, i>n-1 && n%1>.5? x+(fx-x)*2*((n-.5)%0.5): i>n-1 ? NaN:fx );
-    
-    
-  }
-
+  fill(orange);
+  textAlign(CENTER,TOP);
+  text(1,0.5,-b+6/zoom);
+  textAlign(LEFT,CENTER);
+  text(a,1+6/zoom,-b-a/2);
+  stroke(red);
+  fill(red);
+  circle(mx,-b,7/zoom);
   
 }
 
@@ -296,19 +240,17 @@ function isOverElement(elt) {
 }
 
 function mousePressed() {
-  if (isOverElement(inputFunc.elt) || 
-      isOverElement(sliderU0.elt) || 
+  if (isOverElement(sliderU0.elt) || 
       isOverElement(sliderN.elt)) {
     return;
   }
+  
   if ((mouseX >= 300 && mouseX <= width && mouseY >= 0 && mouseY <= height )||
       (mouseX >= 0 && mouseX <= width && mouseY >= 140 && mouseY <= height ) ) {
     dragging = true;
     lastMouseX = mouseX;
     lastMouseY = mouseY;
   }
-
-  
 }
 
 function mouseDragged() {
@@ -322,12 +264,6 @@ function mouseDragged() {
 
 function mouseReleased() {
   dragging = false;
-  let rawN = sliderN.value()+.5;
-  let nearestInt = round(rawN);
-  let tol = 0.3; // tu peux ajuster la tolérance
-  if (abs(rawN - nearestInt) < tol) {
-    sliderN.value(nearestInt-.5);
-  }
 }
 
 function mouseWheel(event) {
@@ -350,8 +286,7 @@ function mouseWheel(event) {
 
 function touchStarted() {
   if (touches.length === 1) {
-    if (isOverElement(inputFunc.elt) || 
-        isOverElement(sliderU0.elt) || 
+    if (isOverElement(sliderU0.elt) || 
         isOverElement(sliderN.elt)) {
       return;
     }
@@ -376,12 +311,6 @@ function touchMoved() {
 function touchEnded() {
   if (touches.length < 2) pinchStartDist = null;
   if (touches.length === 0) dragging = false;
-   let rawN = sliderN.value()+.5;
-  let nearestInt = round(rawN);
-  let tol = 0.3; // tu peux ajuster la tolérance
-  if (abs(rawN - nearestInt) < tol) {
-    sliderN.value(nearestInt-.5);
-  }
 }
 
 function getStep() {
@@ -390,15 +319,20 @@ function getStep() {
   else return 10;
 }
 
-
-
-
-function affun() {
-  if (!afficher){
-  afficher = true
-  boutton.html("Cacher Un");}
-  else{
-    afficher = false;
-    boutton.html("Afficher Un");
-  }
+function showfunc(){
+  
+  b===0 ? B="" : b>0 ? B="+"+b : B = str(b);
+  a===1 ? A="" : A=str(a);
+  stroke(darkMode ? white : black);
+  fill(darkMode ? white : black);
+  strokeWeight(6);
+  stroke(darkMode ? black: white);
+  textSize(width/20);
+  scale(1/zoom, 1/zoom);
+  translate(-width/2 - panX, -height/2 - panY);
+  textAlign(LEFT,TOP);
+  push();
+  textFont("Delius Swash Caps");
+  a===0 ? b===0 ? text("f(x)=0",20,100) : text("f(x)="+B,20,100) : text("f(x)="+A+"x"+B,20,100);
+  pop();
 }

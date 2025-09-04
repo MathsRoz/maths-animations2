@@ -26,7 +26,10 @@ p {
   display: flex;
   font-family: "Delius", sans-serif;
   justify-content: center;
+  align-items: center;
+  align-content: center;
   gap: 20px;
+  flex-wrap: wrap;
   
 }
 
@@ -35,12 +38,14 @@ p {
   font-family: "Delius", sans-serif;
   padding: 12px 12px;
   border-radius: 10px;
+  height: fit-content;
   background: #ffaf03;
   color: #1e1e2f;
   font-weight: bold;
   text-decoration: none;
   transition: 0.3s ease;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.582);
+  flex-shrink: 0;
 }
 
 .btn:hover {

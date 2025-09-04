@@ -91,17 +91,11 @@ function setup() {
   valCSpan.style("text-align", "left");
   valCSpan.class("slider-value");
 
-  white = color("#fffefdff");
-  black = color("#313130ff");
-  orange = color("#ffab51ff");
-  red = color("#e43d3dff");
-  lightgray = color("#ddddddff");
-  darkgray = color("#474747ff");
 
   panX=-200;
   panY=200;
 
-
+couleur();
 }
 function toggleTheme() {
   darkMode = !darkMode;
@@ -220,7 +214,7 @@ function drawFunction() {
   noFill();
   beginShape();
   let step = 1/zoom;
-  for (let x = -20*width/(zoom); x < 20*width/(zoom); x += step) {
+  for (let x = -(width/2+panX)/(zoom); x < (width/2-panX)/(zoom); x += step) {
     let y = a*(x-b)*(x-b)+c;
     if (isFinite(y)) vertex(x, y);
   }
@@ -282,7 +276,7 @@ function mouseWheel(event) {
   let worldY = -(mouseY - height/2 - panY) / zoom;
 
   let factor = 1 - event.delta * 0.001;
-  zoom = constrain(zoom * factor, 10, 500);
+  zoom = constrain(zoom * factor, 10, 10000);
 
   let newScreenX = worldX * zoom;
   let newScreenY = worldY * zoom;
