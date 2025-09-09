@@ -1,7 +1,17 @@
+:root {
+  --black: #272929ff;
+  --white: #f0fbffff;
+  --lightgray: #cbe2e9ff;
+  --darkgray: #504d4dff;
+  --red: #e22121ff;
+  --green: #1dac35ff;
+  --orange: #ffab51ff;
+}
+
 body {
   margin: 0;
-  font-family: "Delius", "SEGOE UI", sans-serif;
-  background:  #313130ff;
+  font-family: "Delius", "Segoe UI", sans-serif;
+  background: #313130ff;
   color: white;
   text-align: center;
 }
@@ -11,7 +21,7 @@ body {
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 4rem;
   margin-bottom: 20px;
   color: #ffd369;
 
@@ -26,26 +36,8 @@ p {
   display: flex;
   font-family: "Delius", sans-serif;
   justify-content: center;
-  align-items: center;
-  align-content: center;
   gap: 20px;
-  flex-wrap: wrap;
   
-}
-
-.btn {
-  display: inline-block;
-  font-family: "Delius", sans-serif;
-  padding: 12px 12px;
-  border-radius: 10px;
-  height: fit-content;
-  background: #ffaf03;
-  color: #1e1e2f;
-  font-weight: bold;
-  text-decoration: none;
-  transition: 0.3s ease;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.582);
-  flex-shrink: 0;
 }
 
 .btn:hover {
@@ -55,111 +47,99 @@ p {
 }
 
 
+.btn {
+  display: inline-block;
+  font-family: "Delius", sans-serif;
+  padding: 12px 12px;
+  border-radius: 10px;
+  background: #ffaf03;
+  color: #1e1e2f;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s ease;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.582);
+}
 
+/* === Boutons === */
 .p5btn {
   display: flex;
   font-family: "Delius", sans-serif;
-  padding: 12px 12px 12px 12px;
-  border-radius: 10px;
-  background: #ffaf03;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--orange);
   align-self: center;
-  color: #1e1e2f;
+  color: var(--black);
   font-weight: bold;
   transition: 0.3s ease;
-  border: none;      
-  outline: none; 
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.582);
+  border: none;
+  outline: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
 }
-
-
 
 .p5btn:hover {
   background: #105231;
   color: white;
+  transform: scale(1.05);
 }
 
+/* === Sliders === */
 .p5slider {
   -webkit-appearance: none;
   appearance: none;
   width: 200px;
   height: 6px;
   border-radius: 4px;
-  background: #ffffff; /* barre claire */
-  outline: none;
-  cursor: pointer;
   background-color: #f0efef;
   border: 2px solid #cc8b00;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.582);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
 }
 
-/* Effet au survol */
-.p5slider:hover {
-  background: #3cb679;
-  border-color: #105231;
-}
-
-/* Curseur (Chrome, Edge, Safari) */
 .p5slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #ffaf03;   /* blanc */
-  border: 1px solid #065e5c; /* bordure grise */
+  background: #ffaf03;
+  border: 2px solid #cc8b00;
   cursor: pointer;
   transition: 0.2s;
-  border: 2px solid #cc8b00; ;           /* supprime le contour natif */
-  outline: none; 
 }
 
 .p5slider::-webkit-slider-thumb:hover {
   background: #198650;
   border-color: #105231;
-  transform: scale(1.3);
+  transform: scale(1.2);
 }
 
-/* Curseur (Firefox) */
-.p5slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #999;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.p5slider::-moz-range-thumb:hover {
-  background: #f5f5f5;
-  border-color: #666;
-}
-
+/* === Labels et valeurs === */
 .slider-label {
-  font-size: 18px;
-  font-weight: bold;     /* 🔥 plus lisible */
-  color: inherit;        /* s’adapte au thème clair/sombre */
+  font-size: 20px;
+  font-weight: bold;
+  color: inherit;
 }
 
 .slider-value {
-  font-size: 16px;
-  font-weight: bold;     /* 🔥 valeur claire et visible */
-  color: inherit;        /* idem */
-  min-width: 40px;       /* largeur stable */
+  font-size: 20px;
+  font-weight: bold;
+  color: inherit;
+  min-width: 40px;
   text-align: left;
 }
 
+/* === Input champ fonction === */
 .func-input {
-  padding: 8px 12px;
-  font-size: 16px;
+  padding: 6px 10px;
+  font-size: 15px;
   font-family: "Delius", sans-serif;
   border: 2px solid #cc8b00;
   border-radius: 6px;
   outline: none;
   background-color: #f1f1f1;
   color: #000000;
-  transition: all 0.2s ease-in-out;
-
+  flex: 1;
+  min-width: 120px;
 }
 
 .func-input:focus {
@@ -171,4 +151,179 @@ p {
 .func-input::placeholder {
   color: #aaa;
   font-style: italic;
+}
+
+/* === Cartes de fonctions (type Desmos) === */
+.func-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background :rgba(255, 168, 110, 0.336);
+  padding: 6px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+.func-toggle {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+
+/* === Custom Color Picker === */
+input[type="color"].func-color {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="color"].func-color:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+}
+
+/* Supprime le carré par défaut du picker natif */
+input[type="color"].func-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"].func-color::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+input[type="color"].func-color::-moz-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+
+/* checkbox custom 
+mettre dans js :
+checkbox.class("checkbox-wrapper-2");
+checkbox.elt.querySelector("input").classList.add("ikxBAC");
+*/
+
+.checkbox-wrapper-2 {
+  display: flex;
+  align-items: center;   /* aligne verticalement checkbox + texte */
+  gap: 8px;              /* espace entre la case et le texte */
+}
+
+.checkbox-wrapper-2 .ikxBAC {
+    appearance: none;
+    background-color: #dfe1e4;
+    border-radius: 72px;
+    border-style: none;
+    flex-shrink: 0;
+    height: 20px;
+    margin: 0;
+    position: relative;
+    width: 30px;
+    vertical-align: middle;
+}
+
+.checkbox-wrapper-2 .ikxBAC::before {
+    bottom: -6px;
+    content: "";
+    left: -6px;
+    position: absolute;
+    right: -6px;
+    top: -6px;
+}
+
+  .checkbox-wrapper-2 .ikxBAC,
+  .checkbox-wrapper-2 .ikxBAC::after {
+    transition: all 100ms ease-out;
+  }
+
+  .checkbox-wrapper-2 .ikxBAC::after {
+    background-color: #fff;
+    border-radius: 50%;
+    content: "";
+    height: 14px;
+    left: 3px;
+    position: absolute;
+    top: 3px;
+    width: 14px;
+  }
+
+  .checkbox-wrapper-2 input[type=checkbox] {
+    cursor: default;
+  }
+
+  .checkbox-wrapper-2 .ikxBAC:hover {
+    background-color: #c9cbcd;
+    transition-duration: 0s;
+  }
+
+  .checkbox-wrapper-2 .ikxBAC:checked {
+    background-color: var(--orange);
+  }
+
+  .checkbox-wrapper-2 .ikxBAC:checked::after {
+    background-color: #fff;
+    left: 13px;
+  }
+
+  .checkbox-wrapper-2 :focus:not(.focus-visible) {
+    outline: 0;
+  }
+
+  .checkbox-wrapper-2 .ikxBAC:checked:hover {
+    background-color: var(--orange);
+  }
+
+
+  /* checkbox autre  */
+  /* === Checkbox génériques (options + fonctions) === */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--orange);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  flex-shrink: 0; /* évite que la case se déforme dans un flex */
+}
+
+.custom-checkbox:checked {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.custom-checkbox::after {
+  position: absolute;
+  top: 1px;
+  left: 3px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.custom-checkbox:checked::after {
+  opacity: 1;
+}
+
+/* Pour l'alignement avec un label */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0px;
 }
