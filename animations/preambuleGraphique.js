@@ -333,25 +333,40 @@ function mouseWheel(event) {
 }
 
 
+function touchStarted() {
+  if (touches.length === 2) {
+    // pinch start
+    pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+  } else if (touches.length === 1) {
+    // drag start
+    lastMouseX = touches[0].x;
+    lastMouseY = touches[0].y;
+    dragging = true;
+  }
+  return false; // empêche le scroll
+}
 
 function touchMoved() {
   if (touches.length === 2 && pinchStartDist !== null) {
+    // zoom
     let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
     let factor = newDist / pinchStartDist;
-    zoom = constrain(zoom * factor, 10, 500);
+    zoom = constrain(zoom * factor, 10, 2000);
     pinchStartDist = newDist;
-    return false;
   } else if (touches.length === 1 && dragging) {
+    // drag
     panX += touches[0].x - lastMouseX;
     panY += touches[0].y - lastMouseY;
     lastMouseX = touches[0].x;
     lastMouseY = touches[0].y;
   }
+  return false; // empêche le scroll
 }
 
 function touchEnded() {
   if (touches.length < 2) pinchStartDist = null;
   if (touches.length === 0) dragging = false;
+  return false;
 }
 
 function getStep() {
