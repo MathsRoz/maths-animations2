@@ -114,13 +114,16 @@ function showfunc(){
   fill(darkMode ? white : black);
   strokeWeight(6);
   stroke(darkMode ? black: white);
-  textSize(width/20);
+  textSize(50);
   scale(1/zoom, -1/zoom);
   translate(-width/2 - panX, -height/2 - panY);
   textAlign(LEFT,TOP);
   push();
   textFont("Delius Swash Caps");
-  a===0 ? b===0 ? text("f(x)=0",20,100) : text("f(x)="+B,20,100) : text("f(x)="+A+"x"+B,20,100);
+  let fonct;
+  fonct = a===0 ? "f(x)=0":b===0 ?"f(x)="+B : "f(x)="+A+"x"+B;
+  text(fonct,20,130);
+  
   pop();
 }
 

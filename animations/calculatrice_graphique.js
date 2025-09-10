@@ -28,7 +28,7 @@ function setup() {
   funcMenu = createDiv();
   funcMenu.style("position", "absolute");
 funcMenu.style("top", "50px");
-funcMenu.style("left", "10px");
+funcMenu.style("left", "0px");
 
   funcMenu.style("gap", "12px");
   funcMenu.style("padding", "12px");
@@ -79,12 +79,14 @@ function addFunction(expr = "f(x)=", color = null) {
   let input = createInput(expr);
   input.parent(cont);
   input.class("func-input");
+  input.style("font-size", "1.5rem");
+  input.style("width", "200px");
 
   // ❌ bouton supprimer
   let delBtn = createButton("×");
   delBtn.parent(cont);
   delBtn.class("p5btn");
-  delBtn.style("font-size", "14px");
+  delBtn.style("font-size", "1rempx");
   delBtn.style("font-align", "center");
   delBtn.style("padding", "2px 6px");
   delBtn.mousePressed(() => {

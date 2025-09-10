@@ -153,7 +153,9 @@ function showfunc(){
   textAlign(LEFT,TOP);
   push();
   textFont("Delius Swash Caps");
-  a===0 ?text("f(x)=0",20,140) : b===0 ? text("f(x)="+A+"x²"+C,20,140) : text("f(x)="+A+"(x"+B+")²"+C,20,140);
+  let fonct;
+  fonct = a===0 ? "f(x)=0":b===0 ?"f(x)="+A+"x²"+C : "f(x)="+A+"(x"+B+")²"+C;
+  text(fonct,20,180);
   pop();
 }
 
@@ -165,10 +167,10 @@ function mousePressed() {
     lastMouseX = mouseX;
     lastMouseY = mouseY;
   
-  if (menuOn && abs(mouseX-width/2)<160 && abs(mouseY-height/2)<160) {
+  if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
     dragging = false;
   }
-  if (mouseX<240 && mouseY<120){
+  if (mouseX<280 && mouseY<200){
     dragging = false;
   }
 }

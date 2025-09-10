@@ -19,7 +19,7 @@ let white, black, orange, red;
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  frameRate(30);
+
 
   // ✅ définir les couleurs comme dans suite_rec.js
   couleur();

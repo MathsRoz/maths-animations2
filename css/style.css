@@ -21,7 +21,7 @@ body {
 }
 
 h1 {
-  font-size: 4rem;
+  font-size: 3rem;
   margin-bottom: 20px;
   color: #ffd369;
 
@@ -34,15 +34,16 @@ p {
 
 .buttons {
   display: flex;
+  flex-direction : row;
+  flex-wrap: wrap;
   font-family: "Delius", sans-serif;
+  font-size: 2rem;
   justify-content: center;
   gap: 20px;
   
 }
 
 .btn:hover {
-  background: #105231;
-  color: white;
   transform: scale(1.1);
 }
 
@@ -57,7 +58,9 @@ p {
   font-weight: bold;
   text-decoration: none;
   transition: 0.3s ease;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.582);
+  flex-shrink: 0;
+  box-shadow: 3px 3px 3px  rgba(0, 0, 0, 0.432);
+  
 }
 
 /* === Boutons === */
@@ -65,6 +68,7 @@ p {
   display: flex;
   font-family: "Delius", sans-serif;
   padding: 8px 12px;
+  font-size : 1.5rem;
   border-radius: 8px;
   background: var(--orange);
   align-self: center;
@@ -73,55 +77,55 @@ p {
   transition: 0.3s ease;
   border: none;
   outline: none;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  
   cursor: pointer;
 }
 
 .p5btn:hover {
-  background: #105231;
-  color: white;
-  transform: scale(1.05);
+
+  transform: scale(1.1);
 }
 
 /* === Sliders === */
 .p5slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 200px;
-  height: 6px;
-  border-radius: 4px;
-  background-color: #f0efef;
-  border: 2px solid #cc8b00;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  width: 10rem;
+  height: .5rem;
+  border-radius: .3rem;
+  background-color: #ffaf03;
+  
   cursor: pointer;
 }
 
 .p5slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  background: #ffaf03;
-  border: 2px solid #cc8b00;
+  background: rgb(255, 255, 255);
+  border : solid 4px #ffaf03;
+
   cursor: pointer;
   transition: 0.2s;
 }
 
 .p5slider::-webkit-slider-thumb:hover {
-  background: #198650;
-  border-color: #105231;
+  background: white;
   transform: scale(1.2);
 }
 
 /* === Labels et valeurs === */
 .slider-label {
-  font-size: 20px;
+
+  font-size: 2rem;
   font-weight: bold;
   color: inherit;
+  
 }
 
 .slider-value {
-  font-size: 20px;
+  font-size: 2rem;
   font-weight: bold;
   color: inherit;
   min-width: 40px;
@@ -131,7 +135,7 @@ p {
 /* === Input champ fonction === */
 .func-input {
   padding: 6px 10px;
-  font-size: 15px;
+  font-size: 2rem;
   font-family: "Delius", sans-serif;
   border: 2px solid #cc8b00;
   border-radius: 6px;
@@ -193,7 +197,7 @@ input[type="color"].func-color {
 
 input[type="color"].func-color:hover {
   transform: scale(1.2);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+  
 }
 
 /* Supprime le carré par défaut du picker natif */
@@ -267,6 +271,8 @@ checkbox.elt.querySelector("input").classList.add("ikxBAC");
   .checkbox-wrapper-2 .ikxBAC:hover {
     background-color: #c9cbcd;
     transition-duration: 0s;
+    transition: 0.2s;
+    transform: scale(1.2);
   }
 
   .checkbox-wrapper-2 .ikxBAC:checked {
@@ -304,6 +310,9 @@ checkbox.elt.querySelector("input").classList.add("ikxBAC");
   flex-shrink: 0; /* évite que la case se déforme dans un flex */
 }
 
+.custom-checkbox:hover{
+  transform : scale(1.2);
+}
 .custom-checkbox:checked {
   background: var(--orange);
   border-color: var(--orange);

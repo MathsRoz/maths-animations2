@@ -32,11 +32,13 @@ let white, black, orange, red,lightgray, darkgray;
 function preambuleSetup(){
 
  pixelDensity(1);
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth-10, windowHeight-10);
 
   menuButton = createButton("Options");
   menuButton.class("p5btn");
-  menuButton.position(windowWidth - 100, 20);
+  menuButton.style("position", "absolute");
+  menuButton.style("right", "10px");
+  menuButton.style("top", "10px");
   menuButton.mousePressed(showMenu);
 
 
@@ -88,7 +90,7 @@ function preambuleSetup(){
   sliderTaille = createSlider(1, 10, 3, 0.1);
   sliderTaille.parent(contTaille);
   sliderTaille.class("p5slider");
-  sliderTaille.size(100);
+  sliderTaille.size(300);
   valTailleSpan = createSpan(sliderTaille.value());
   valTailleSpan.parent(contTaille);
   valTailleSpan.style("text-align", "left");
@@ -137,7 +139,7 @@ function preambuleSetup(){
 
 
 function preambuleDraw(){
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth-5, windowHeight-5);
 
   if (darkMode) background(black);
   else background(white);
@@ -287,6 +289,11 @@ line(0, -height, 0, height);
 }
 
 
+function overOption(){
+  if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
+    dragging = false;
+  }
+}
 
 function mousePressed() {
   
@@ -295,9 +302,7 @@ function mousePressed() {
     lastMouseX = mouseX;
     lastMouseY = mouseY;
   
-  if (menuOn && abs(mouseX-width/2)<160 && abs(mouseY-height/2)<160) {
-    dragging = false;
-  }
+  overOption();
 }
 
 function mouseDragged() {
