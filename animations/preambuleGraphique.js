@@ -391,9 +391,9 @@ function touchMoved(e) {
 }
 
 function touchEnded(e) {
+  if (document.activeElement) document.activeElement.blur(); // retire le focus
   if (touches.length < 2) pinchStartDist = null;
   if (touches.length === 0) dragging = false;
-  // pas de return false pour laisser boutons réagir
 }
 
 
