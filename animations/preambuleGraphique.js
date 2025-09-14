@@ -353,38 +353,32 @@ function mouseWheel(event) {
 }
 
 
-// =======================
-// 📱 GESTION TACTILE
-// =======================
-function touchStarted() {
-  if (isOverHTMLElement()) return; // laisse les boutons réagir
+function touchStarted(e) {
+  // si on touche un bouton / slider / input -> on laisse le navigateur gérer
+  if (isOverHTMLElement()) return;
 
   if (touches.length === 1) {
-    // drag
     lastMouseX = touches[0].x;
     lastMouseY = touches[0].y;
     dragging = true;
   } else if (touches.length === 2) {
-    // pinch zoom
     pinchStartDist = dist(
       touches[0].x, touches[0].y,
       touches[1].x, touches[1].y
     );
   }
-  return false;
+  // ⚠️ ne pas return false ici → sinon les boutons ne cliquent pas
 }
 
-function touchMoved() {
-  if (isOverHTMLElement()) return; // laisse UI fonctionner
+function touchMoved(e) {
+  if (isOverHTMLElement()) return;
 
   if (touches.length === 1 && dragging) {
-    // drag
     panX += touches[0].x - lastMouseX;
     panY += touches[0].y - lastMouseY;
     lastMouseX = touches[0].x;
     lastMouseY = touches[0].y;
   } else if (touches.length === 2 && pinchStartDist !== null) {
-    // pinch zoom
     let newDist = dist(
       touches[0].x, touches[0].y,
       touches[1].x, touches[1].y
@@ -393,13 +387,13 @@ function touchMoved() {
     zoom = constrain(zoom * factor, 10, 500);
     pinchStartDist = newDist;
   }
-  return false;
+  return false; // ici on bloque le scroll de la page seulement pendant le drag/zoom
 }
 
-function touchEnded() {
+function touchEnded(e) {
   if (touches.length < 2) pinchStartDist = null;
   if (touches.length === 0) dragging = false;
-  return false;
+  // pas de return false pour laisser boutons réagir
 }
 
 
