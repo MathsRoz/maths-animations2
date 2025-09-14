@@ -295,14 +295,28 @@ function overOption(){
   }
 }
 
+function isOverHTMLElement() {
+  const active = document.activeElement.tagName;
+  return (
+    active === "INPUT" ||
+    active === "BUTTON" ||
+    active === "SELECT" ||
+    active === "TEXTAREA"
+  );
+}
+
+
+// =======================
+// 🖱️ GESTION SOURIS
+// =======================
 function mousePressed() {
-  
-  
+  if (isOverHTMLElement()) return; // on ne bloque pas sliders/boutons
+
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
     dragging = true;
     lastMouseX = mouseX;
     lastMouseY = mouseY;
-  
-  overOption();
+  }
 }
 
 function mouseDragged() {
@@ -319,18 +333,19 @@ function mouseReleased() {
 }
 
 function mouseWheel(event) {
-  let worldX = (mouseX - width/2 - panX) / zoom;
-  let worldY = -(mouseY - height/2 - panY) / zoom;
+  // coordonnées monde de la souris
+  let worldX = (mouseX - width / 2 - panX) / zoom;
+  let worldY = -(mouseY - height / 2 - panY) / zoom;
 
   let factor = 1 - event.delta * 0.001;
-  zoom = constrain(zoom * factor, 10, 2000);
-  
+  zoom = constrain(zoom * factor, 10, 500);
+
+  // correction pour garder la souris fixe
   let newScreenX = worldX * zoom;
   let newScreenY = worldY * zoom;
   let oldScreenX = worldX * (zoom / factor);
   let oldScreenY = worldY * (zoom / factor);
 
-  
   panX += oldScreenX - newScreenX;
   panY += -(oldScreenY - newScreenY);
 
@@ -338,34 +353,47 @@ function mouseWheel(event) {
 }
 
 
+// =======================
+// 📱 GESTION TACTILE
+// =======================
 function touchStarted() {
-  if (touches.length === 2) {
-    // pinch start
-    pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-  } else if (touches.length === 1) {
-    // drag start
+  if (isOverHTMLElement()) return; // laisse les boutons réagir
+
+  if (touches.length === 1) {
+    // drag
     lastMouseX = touches[0].x;
     lastMouseY = touches[0].y;
     dragging = true;
+  } else if (touches.length === 2) {
+    // pinch zoom
+    pinchStartDist = dist(
+      touches[0].x, touches[0].y,
+      touches[1].x, touches[1].y
+    );
   }
-  return false; // empêche le scroll
+  return false;
 }
 
 function touchMoved() {
-  if (touches.length === 2 && pinchStartDist !== null) {
-    // zoom
-    let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-    let factor = newDist / pinchStartDist;
-    zoom = constrain(zoom * factor, 10, 2000);
-    pinchStartDist = newDist;
-  } else if (touches.length === 1 && dragging) {
+  if (isOverHTMLElement()) return; // laisse UI fonctionner
+
+  if (touches.length === 1 && dragging) {
     // drag
     panX += touches[0].x - lastMouseX;
     panY += touches[0].y - lastMouseY;
     lastMouseX = touches[0].x;
     lastMouseY = touches[0].y;
+  } else if (touches.length === 2 && pinchStartDist !== null) {
+    // pinch zoom
+    let newDist = dist(
+      touches[0].x, touches[0].y,
+      touches[1].x, touches[1].y
+    );
+    let factor = newDist / pinchStartDist;
+    zoom = constrain(zoom * factor, 10, 500);
+    pinchStartDist = newDist;
   }
-  return false; // empêche le scroll
+  return false;
 }
 
 function touchEnded() {
@@ -374,10 +402,12 @@ function touchEnded() {
   return false;
 }
 
+
+// =======================
+// 📏 GRADUATIONS DYNAMIQUES
+// =======================
 function getStep() {
-  if (zoom>500) return 0.25;
-  else if (zoom>200) return 0.5;
-  else if (zoom > 50) return 1;
+  if (zoom > 40) return 1;
   else if (zoom > 20) return 5;
   else return 10;
 }
