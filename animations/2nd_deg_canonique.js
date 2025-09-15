@@ -105,7 +105,7 @@ function drawFunction() {
   c=sliderC.value();
   stroke(323,72,85);
   stroke(red);
-  strokeWeight(3/zoom);
+  strokeWeight(linesize);
   noFill();
   beginShape();
   let step = 1/zoom;
@@ -118,7 +118,7 @@ function drawFunction() {
 
 function drawLines() {
   
-  drawingContext.setLineDash([5/zoom, 5/zoom]);
+  drawingContext.setLineDash([linesize, linesize*2]);
   stroke(orange);
   line(b,0,b,c);
   line(0,c,b,c);

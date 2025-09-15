@@ -401,7 +401,9 @@ function touchEnded(e) {
 // 📏 GRADUATIONS DYNAMIQUES
 // =======================
 function getStep() {
-  if (zoom > 40) return 1;
+  if (zoom>240) return 0.25
+  else if (zoom>150) return 0.5;
+  else if (zoom > 40) return 1;
   else if (zoom > 20) return 5;
   else return 10;
 }
