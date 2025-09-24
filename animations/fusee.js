@@ -55,7 +55,7 @@ function setup() {
   resetBtn.parent(container);
 
   // ✅ Bouton Sécante
-  secBtn = createButton("📐 Sécante OFF");
+  secBtn = createButton("Sécante ❌");//✅❌
   secBtn.class("p5btn");
   secBtn.mousePressed(toggleSecante);
   secBtn.parent(container);
@@ -155,12 +155,12 @@ function resetAnimation() {
   playBtn.html("▶ Play");
   setupab=false;
   showSecante=false;
-  secBtn.html("📐 Sécante OFF");
+  secBtn.html("Sécante❌");
 }
 
 function toggleSecante() {
   showSecante = !showSecante;
-  secBtn.html(showSecante ? "📐 Sécante ON" : "📐 Sécante OFF");
+  secBtn.html(showSecante ? "Sécante✅" : "Sécante❌");
   !showSecante ? setupab=false : 4;
 }
 
@@ -285,6 +285,7 @@ function mouseDragged() {
   if (dragging) {
     panX += mouseX - lastMouseX;
     panY += mouseY - lastMouseY;
+    cursor('grab');
   }
 
   if (dragging1) {

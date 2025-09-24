@@ -1,36 +1,52 @@
 let inputFunc;
 
-let p1, p2;
-let dragging1 = false, dragging2 = false;
-let hover1 = false, hover2 = false;
-let hoversize = 15/zoom;
+let p1;
+let dragging1 = false;
+let hover1 = false;
+let hoversize;
+let showd=false;
 
 function setup() {
   // ⚡ Initialise zoom, pan, thème, options, etc.
   preambuleSetup();
+
+  
+
+  // ✅ Bouton Play/Pause
+  let cont = createDiv();
+  cont.style("gap", "10px");
+  cont.position(20, 20);
+
 
   // Conteneur input
   let container = createDiv();
   container.style("display", "flex");
   container.style("align-items", "center");
   container.style("gap", "10px");
-  container.position(20, 20);
+  container.parent(cont);
 
   // Label f(x)=
   let label = createSpan("f(x) =");
   label.parent(container);
   label.class("slider-label");
 
+  
+
   // Zone de saisie
-  inputFunc = createInput("x*x");
+  inputFunc = createInput("x*cos(x)");
   inputFunc.parent(container);
   inputFunc.size(200);
   inputFunc.class("func-input");
 
+  derivBtn = createButton("f' ✅"); //✅❌
+  derivBtn.class("p5btn");
+  derivBtn.mousePressed(derivativeShow);
+  derivBtn.parent(cont);
+  
+
   // Points initiaux
   let expr = inputFunc.value();
   p1 = createVector(-1, evalFunction(expr, -1));
-  p2 = createVector(2, evalFunction(expr, 2));
 
   gridbox.checked(false);
   unitebox.checked(false);
@@ -39,55 +55,49 @@ function setup() {
 
 }
 
+
+function derivativeShow(){
+  if (showd){
+    derivBtn.html("f' ✅");
+
+  }
+  else{
+    derivBtn.html("f' ❌");
+  }
+  showd=!showd;
+}
+
 function draw() {
   preambuleDraw();
-
+  hoversize=linesize*5;
   let expr = inputFunc.value(); // ✅ Calcul une seule fois
 
   drawFunction(expr);
+  drawDerivative(expr);
   updatePoints(expr);
-  secante(expr);
   drawPoints();
 }
 
 function updatePoints(expr) {
   p1.y = evalFunction(expr, p1.x);
-  p2.y = evalFunction(expr, p2.x);
 }
 
 function drawPoints() {
   stroke(orange);
   hover();
 
-  hover1 && !hover2 ? strokeWeight(linesize * 5) : strokeWeight(linesize * 3);
+  hover1 ? strokeWeight(linesize * 5) : strokeWeight(linesize * 3);
   point(p1.x, p1.y);
-
-  hover2  ? strokeWeight(linesize * 5) : strokeWeight(linesize * 3);
-  point(p2.x, p2.y);
 }
 
 function hover() {
   let mx = (mouseX - width / 2 - panX) / zoom;
   let my = -(mouseY - height / 2 - panY) / zoom;
   hover1 = dist(mx, my, p1.x, p1.y) < hoversize;
-  hover2 = dist(mx, my, p2.x, p2.y) < hoversize;
+  hover1? cursor('grab') : cursor(ARROW);
 }
 
-function secante(expr) {
-  strokeWeight(linesize);
-  stroke(orange);
 
-  let x1 = -(width / 2 + panX) / zoom;
-  let x2 = (width / 2 - panX) / zoom;
-
-  let dx = p2.x - p1.x;
-  if (abs(dx) < 1e-6) return; // ✅ éviter les pentes infinies
-
-  let slopeSec = (p2.y - p1.y) / dx;
-  let y1 = p1.y + slopeSec * (x1 - p1.x);
-  let y2 = p1.y + slopeSec * (x2 - p1.x);
-  line(x1, y1, x2, y2);
-}
 
 function preprocessExpr(expr) {
   expr = expr.replace(/\s+/g, "");
@@ -145,6 +155,22 @@ function drawFunction(expr) {
   }
 
   endShape();
+  
+}
+
+function drawDerivative(expr){
+  if (showd){
+  let step = 1 / zoom;
+  beginShape();
+  stroke(orange);
+  for (let x = -(width / 2 + panX) / zoom; x < p1.x; x += step) {
+    let a = evalFunction(expr, x);
+    let b = evalFunction(expr,x+step);
+    let y = (b-a)/step
+    if (isFinite(y)) vertex(x, y);
+  }
+
+  endShape();}
 }
 
 // =======================
@@ -156,11 +182,6 @@ function mousePressed() {
   let mx = (mouseX - width / 2 - panX) / zoom;
   let my = -(mouseY - height / 2 - panY) / zoom;
 
-  if (dist(mx, my, p2.x, p2.y) < hoversize) {
-    dragging = false;
-    dragging2 = true;
-    return;
-  }
   if (dist(mx, my, p1.x, p1.y) < hoversize) {
     dragging = false;
     dragging1 = true;
@@ -183,25 +204,20 @@ function mouseDragged() {
   if (dragging) {
     panX += mouseX - lastMouseX;
     panY += mouseY - lastMouseY;
-    cursor('grab');
   }
 
   if (dragging1) {
     p1.x += (mouseX - lastMouseX) / zoom;
   }
 
-  if (dragging2) {
-    p2.x += (mouseX - lastMouseX) / zoom;
-  }
+
 
   // ✅ Mise à jour une seule fois à la fin
   lastMouseX = mouseX;
   lastMouseY = mouseY;
-  
 }
 
 function mouseReleased() {
   dragging = false;
   dragging1 = false;
-  dragging2 = false;
 }
