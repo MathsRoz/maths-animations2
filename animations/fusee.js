@@ -1,4 +1,3 @@
-let p1, p2;
 let dragging1 = false, dragging2 = false;
 let hover1 = false, hover2 = false;
 let hoversize = 15 / zoom;
@@ -12,6 +11,7 @@ let playBtn, resetBtn, secBtn; // ✅ bouton sécante
 let inputFunc = "3.42*x*x/1000";
 let showSecante = false;
 let setupab = false;
+let labelVitesse;
 
 let a, b, fa, fb, vitesse; // ✅ valeurs de la sécante
 
@@ -21,6 +21,13 @@ function preload() {
 
 function setup() {
   preambuleSetup();
+
+  let cont = createDiv();
+  cont.style("display", "flex");
+  cont.style("gap", "10px");
+  cont.style("justify-content", "center");
+
+
 
   // ✅ Conteneur boutons centré en haut
   let container = createDiv();
@@ -33,6 +40,7 @@ function setup() {
   container.style("top", "20px");         // marge du haut
   container.style("left", "50%");         // centre horizontal
   container.style("transform", "translateX(-50%)"); // correction pour bien centrer
+  container.parent(cont);
 
   // ✅ Bouton Play/Pause
   playBtn = createButton("▶ Play");
@@ -62,7 +70,20 @@ function setup() {
   inputX.value("s");
   inputY.value("km");
   zoom = 5;
-
+  
+  labelVitesse = createSpan("");
+  labelVitesse.style("flex-shrink", "0");
+  labelVitesse.class("slider-label");
+  labelVitesse.style("display", "flex");
+  labelVitesse.style("flex-direction", "row");
+  labelVitesse.style("flex-wrap", "wrap");
+  labelVitesse.style("gap", "10px");
+  labelVitesse.style("justify-content", "center");
+  labelVitesse.style("position", "fixed");   // reste fixé même si tu scroll
+  labelVitesse.style("top", "80px");         // marge du haut
+  labelVitesse.style("left", "50%");         // centre horizontal
+  labelVitesse.style("transform", "translateX(-50%)");
+  labelVitesse.parent(cont);
 }
 
 
@@ -114,6 +135,9 @@ function draw() {
 
   // ✅ Tracer la sécante si activée
   drawSec(expr);
+
+  hover();
+  deplaceab();
 }
 
 // =======================
@@ -197,9 +221,89 @@ function drawSec(expr) {
   let min = -(width/2-panX)/(zoom);
   line(min,vitesse*(min-a)+fa,a,fa);
   let max = (width/2-panX)/(zoom);
-  line(max,vitesse*(max-a)+fa,a,fa);
+  line(max,vitesse*(max-b)+fb,b,fb);
   drawingContext.setLineDash([]);
   
   line(a,fa,b,fb);
+  showSecante ? labelVitesse.html("vitesse = " +  (fb-fa).toPrecision(4)+"/"+(b-a).toPrecision(4) + " = " + round(vitesse*3600) + " km/h") : labelVitesse.html("") 
+}
+
+function hover(){
+  let mx = (mouseX - width / 2 - panX) / zoom;
+  let my = -(mouseY - height / 2 - panY) / zoom;
+  if (abs(mx - a)<linesize*2 && my>-1 && my<fa && showSecante){
+    hover1 = true;
+  }
+  else{
+    hover1 = false;
+  }
+  if (abs(mx - b)<linesize*2 && my>-linesize && my<fb && showSecante){
+    hover2 = true;
+  }
+  else{
+    hover2 = false;
+  }
+}
+
+function deplaceab(){
   
+  hover2 || hover1 ? cursor(MOVE) : cursor(ARROW);
+
+}
+
+function mousePressed() {
+  lastMouseX = mouseX;
+  lastMouseY = mouseY;
+  let mx = (mouseX - width / 2 - panX) / zoom;
+  let my = -(mouseY - height / 2 - panY) / zoom;
+
+  if (hover1) {
+    dragging = false;
+    dragging1 = true;
+    return;
+  }
+  if (hover2) {
+    dragging = false;
+    dragging2 = true;
+    return;
+  }
+
+  if (menuOn && abs(mouseX - width / 2) < 250 && abs(mouseY - height / 2) < 150) {
+    dragging = false;
+    return;
+  }
+  if (mouseX < 280 && mouseY < 100) {
+    dragging = false;
+    return;
+  }
+
+  dragging = true;
+}
+
+
+function mouseDragged() {
+  if (dragging) {
+    panX += mouseX - lastMouseX;
+    panY += mouseY - lastMouseY;
+  }
+
+  if (dragging1) {
+    a += (mouseX - lastMouseX) / zoom;
+  }
+
+  if (dragging2) {
+    b += (mouseX - lastMouseX) / zoom;
+  }
+
+  // ✅ Mise à jour une seule fois à la fin
+  lastMouseX = mouseX;
+  lastMouseY = mouseY;
+  a<0 ? a=0 : a=a;
+  b<0 ? b=0 : b=b;
+}
+
+function mouseReleased() {
+  dragging = false;
+  dragging1 = false;
+  dragging2 = false;
 }

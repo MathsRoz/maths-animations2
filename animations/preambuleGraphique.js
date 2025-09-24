@@ -202,7 +202,10 @@ function drawAxes() {
 
   let step = getStep();
 
-  
+  let wmax = (width/2-panX)/zoom;
+  let wmin = -(width/2+panX)/zoom;
+  let hmax= (height/2+panY)/(zoom);
+  let hmin = -(height/2-panY)/(zoom);
 
   for (let i = -Math.floor((width/2+panX)/(zoom)/step)*step; i <= Math.floor((width/2-panX)/(zoom)/step)*step; i+=step) {
     if ( i !== 0) {
@@ -210,7 +213,7 @@ function drawAxes() {
       push();
       strokeWeight(linesize*0.6);
       stroke(darkMode ? darkgray : lightgray );
-      line(i,-width/0.2*zoom, i, width/0.2*zoom);
+      line(i,hmin, i, hmax);
       pop();}
       strokeWeight(linesize);
       if (unitebox.checked()){
@@ -225,7 +228,7 @@ function drawAxes() {
       push();
       strokeWeight(linesize/1.5);
       stroke(darkMode ? darkgray : lightgray );
-      line(-width/0.2*zoom,j, width/0.2*zoom,j);
+      line(wmin,j, wmax,j);
       pop();}
 
       if (unitebox.checked()){
@@ -305,8 +308,8 @@ if (unitebox.checked()){
 }
 
 
-line(-width, 0, width, 0);
-line(0, -height, 0, height);
+line(wmin, 0, wmax, 0);
+line(0, hmin, 0, hmax);
 
 push();
   scale(1,-1);
@@ -377,7 +380,7 @@ function mouseWheel(event) {
   let worldY = -(mouseY - height / 2 - panY) / zoom;
 
   let factor = 1 - event.delta * 0.001;
-  zoom = constrain(zoom * factor, 1, 500);
+  zoom = constrain(zoom * factor, 0.1, 3000);
 
   // correction pour garder la souris fixe
   let newScreenX = worldX * zoom;
@@ -440,13 +443,18 @@ function touchEnded(e) {
 // 📏 GRADUATIONS DYNAMIQUES
 // =======================
 function getStep() {
-  if (zoom>300) return 0.25;
+  if (zoom>600) return 0.125;
+  else if (zoom>300) return 0.25;
   else if (zoom>150) return 0.5;
   else if (zoom > 40) return 1;
   else if (zoom > 20) return 5;
   else if (zoom > 10) return 10;
   else if (zoom > 5) return 20;
-  else return 50;
+  else if (zoom > 2) return 50;
+  else if (zoom > 1) return 100;
+  else if (zoom > .5) return 200;
+  else if (zoom > .2) return 500;
+  else return 1000;
 }
 
 
