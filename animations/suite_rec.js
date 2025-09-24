@@ -89,7 +89,8 @@ function setup() {
   
   updateFunction();
 
-  
+  panX=-200;
+  panY=200;
 
 }
 

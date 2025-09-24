@@ -1,320 +1,205 @@
 let inputFunc;
-let exprFunc;
 
-let p1, p2; 
+let p1, p2;
 let dragging1 = false, dragging2 = false;
 let hover1 = false, hover2 = false;
-
-let panX = 0, panY = 0;
-let draggingGraph = false;
-let lastMouseX, lastMouseY;
-
-let zoom = 100;
-
-// ✅ thème
-let themeBtn;
-let darkMode = true;
-let white, black, orange, red;
+let hoversize = 15/zoom;
 
 function setup() {
-  pixelDensity(1);
-  createCanvas(windowWidth, windowHeight);
+  // ⚡ Initialise zoom, pan, thème, options, etc.
+  preambuleSetup();
 
-
-  // ✅ définir les couleurs comme dans suite_rec.js
-  couleur();
-
-  // ✅ bouton clair/sombre
-  themeBtn = createButton("Mode sombre");
-  themeBtn.position(windowWidth - 200, 20);
-  themeBtn.class("p5btn");
-  themeBtn.mousePressed(toggleTheme);
-
+  // Conteneur input
   let container = createDiv();
   container.style("display", "flex");
   container.style("align-items", "center");
   container.style("gap", "10px");
   container.position(20, 20);
 
-  // label f(x) =
+  // Label f(x)=
   let label = createSpan("f(x) =");
   label.parent(container);
   label.class("slider-label");
 
-  // Input fonction
+  // Zone de saisie
   inputFunc = createInput("x*x");
   inputFunc.parent(container);
   inputFunc.size(200);
-  inputFunc.input(updateFunction);
   inputFunc.class("func-input");
-  
-
-  updateFunction();
 
   // Points initiaux
-  p1 = createVector(-.5, safeEval(-.5)); 
-  p2 = createVector(1, safeEval(1));   
-}
+  let expr = inputFunc.value();
+  p1 = createVector(-1, evalFunction(expr, -1));
+  p2 = createVector(2, evalFunction(expr, 2));
 
-function toggleTheme() {
-  darkMode = !darkMode;
-  if (darkMode) {
-    themeBtn.html("Mode sombre");
-    document.body.style.color = "white"; 
-  } else {
-    themeBtn.html("Mode clair");
-    document.body.style.color = "black";
-  }
-}
+  gridbox.checked(false);
+  unitebox.checked(false);
+  panX=0;
+  panY=0;
 
-function updateFunction() {
-  try {
-    let expr = inputFunc.value();
-    exprFunc = new Function("x", "with(Math){ return " + expr + "; }");
-  } catch (e) {
-    exprFunc = (x) => 0;
-  }
 }
 
 function draw() {
-  createCanvas(windowWidth, windowHeight);
-  if (darkMode) background(black);
-  else background(white);
+  preambuleDraw();
 
-  themeBtn.position(windowWidth - 200, 20);
+  let expr = inputFunc.value(); // ✅ Calcul une seule fois
 
-  translate(width/2 + panX, height/2 + panY);
-  scale(1, -1);
-
-  // Axes
-  stroke(darkMode ? white : black);
-  strokeWeight(2);
-  line(-width, 0, width, 0);
-  line(0, -height, 0, height);
-
-  // Courbe
-  let step = (windowWidth < 600) ? 0.05 : 0.01;
-  stroke(darkMode ? white : black);
-  strokeWeight(3);
-  noFill();
-  beginShape();
-  for (let x = -width/zoom; x < width/zoom; x += step) {
-    let y = safeEval(x);
-    vertex(x * zoom, y * zoom);
-  }
-  endShape();
-
-  // Points A et B
-  p1.y = safeEval(p1.x);
-  p2.y = safeEval(p2.x);
-
-  let x1 = -width/zoom, x2 = width/zoom;
-
-  // Tangente
-  stroke(orange);
-  strokeWeight(3);
-  drawingContext.setLineDash([6]);
-  let h = 0.0001;
-  let slopeT = (safeEval(p1.x+h) - safeEval(p1.x-h)) / (2*h);
-  let y1t = p1.y + slopeT * (x1 - p1.x);
-  let y2t = p1.y + slopeT * (x2 - p1.x);
-  line(x1*zoom, y1t*zoom, x2*zoom, y2t*zoom);
-  drawingContext.setLineDash([]);
-
-  // Sécante
-  stroke(red);
-  strokeWeight(3);
-  let slopeSec = (p2.y - p1.y) / (p2.x - p1.x + 1e-9);
-  let y1 = p1.y + slopeSec * (x1 - p1.x);
-  let y2 = p1.y + slopeSec * (x2 - p1.x);
-  line(x1*zoom, y1*zoom, x2*zoom, y2*zoom);
-
-  // Survol
-  let mx = (mouseX - width/2 - panX) / zoom;
-  let my = -(mouseY - height/2 - panY) / zoom;
-  hover1 = dist(mx, my, p1.x, p1.y) < 0.2;
-  hover2 = dist(mx, my, p2.x, p2.y) < 0.2;
-
-  stroke(red);
-  strokeWeight(hover1 ? 22 : 15);
-  point(p1.x * zoom, p1.y * zoom);
-  strokeWeight(hover2 ? 22 : 15);
-  point(p2.x * zoom, p2.y * zoom);
-
-  // Étiquettes
-  scale(1, -1);
-  fill(darkMode ? white : black);
-  stroke(darkMode ? black : white);
-  strokeWeight(3);
-  textSize(20);
-  text("A", p1.x*zoom + 10, -p1.y*zoom - 10);
-  text("B", p2.x*zoom + 10, -p2.y*zoom - 10);
-  scale(1, -1);
-
-  if (hover1 || hover2) cursor("pointer");
-  else if (draggingGraph) cursor("grabbing");
-  else cursor("default");
+  drawFunction(expr);
+  updatePoints(expr);
+  secante(expr);
+  drawPoints();
 }
 
-function mousePressed() {
-  if (document.activeElement.tagName === "INPUT") return;
+function updatePoints(expr) {
+  p1.y = evalFunction(expr, p1.x);
+  p2.y = evalFunction(expr, p2.x);
+}
 
-  let mx = (mouseX - width/2 - panX) / zoom;
-  let my = -(mouseY - height/2 - panY) / zoom;
+function drawPoints() {
+  stroke(orange);
+  hover();
 
-  let dA = dist(mx, my, p1.x, p1.y);
-  let dB = dist(mx, my, p2.x, p2.y);
+  hover1 && !hover2 ? strokeWeight(linesize * 5) : strokeWeight(linesize * 3);
+  point(p1.x, p1.y);
 
-  if (dA < 0.2 && dA <= dB) {
-    dragging1 = true;
-  } else if (dB < 0.2 && dB < dA) {
-    dragging2 = true;
-  } else {
-    draggingGraph = true;
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
-    cursor("grabbing");
+  hover2  ? strokeWeight(linesize * 5) : strokeWeight(linesize * 3);
+  point(p2.x, p2.y);
+}
+
+function hover() {
+  let mx = (mouseX - width / 2 - panX) / zoom;
+  let my = -(mouseY - height / 2 - panY) / zoom;
+  hover1 = dist(mx, my, p1.x, p1.y) < hoversize;
+  hover2 = dist(mx, my, p2.x, p2.y) < hoversize;
+}
+
+function secante(expr) {
+  strokeWeight(linesize);
+  stroke(orange);
+
+  let x1 = -(width / 2 + panX) / zoom;
+  let x2 = (width / 2 - panX) / zoom;
+
+  let dx = p2.x - p1.x;
+  if (abs(dx) < 1e-6) return; // ✅ éviter les pentes infinies
+
+  let slopeSec = (p2.y - p1.y) / dx;
+  let y1 = p1.y + slopeSec * (x1 - p1.x);
+  let y2 = p1.y + slopeSec * (x2 - p1.x);
+  line(x1, y1, x2, y2);
+}
+
+function preprocessExpr(expr) {
+  expr = expr.replace(/\s+/g, "");
+  if (expr.includes("=")) expr = expr.split("=")[1];
+  expr = expr.replace(/\^/g, "**");
+  expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
+  expr = expr.replace(/(\d)\(/g, "$1*(");
+  expr = expr.replace(/\)(\d)/g, ")*$1");
+  expr = expr.replace(/\)([a-zA-Z])/g, ")*$1");
+  expr = expr.replace(/\)\(/g, ")*(");
+  expr = expr.replace(/\bln\(/g, "log(");
+  expr = expr.replace(/\blog10\(/g, "log10(");
+  expr = expr.replace(/\blog\(/g, "log10(");
+  expr = expr.replace(/\btg\(/g, "tan(");
+  expr = expr.replace(/\bctg\(/g, "1/tan(");
+  expr = expr.replace(/\bcot\(/g, "1/tan(");
+  expr = expr.replace(/\bpi\b/gi, "PI");
+  expr = expr.replace(/\be\b/g, "E");
+
+  const functions = [
+    "sin", "cos", "tan", "log", "log10", "sqrt", "abs", "exp",
+    "asin", "acos", "atan", "sinh", "cosh", "tanh"
+  ];
+  for (let fn of functions) {
+    expr = expr.replace(new RegExp(fn + "\\*\\(", "g"), fn + "(");
   }
+
+  let open = (expr.match(/\(/g) || []).length;
+  let close = (expr.match(/\)/g) || []).length;
+  if (open > close) expr += ")".repeat(open - close);
+
+  return expr;
+}
+
+function evalFunction(expr, x) {
+  try {
+    expr = preprocessExpr(expr);
+    return Function("x", "with(Math){ return " + expr + "; }")(x);
+  } catch (e) {
+    console.error("Erreur d'évaluation :", e);
+    return NaN;
+  }
+}
+
+function drawFunction(expr) {
+  strokeWeight(linesize);
+  stroke(red);
+  noFill();
+  beginShape();
+
+  let step = 1 / zoom;
+  for (let x = -(width / 2 + panX) / zoom; x < (width / 2 - panX) / zoom; x += step) {
+    let y = evalFunction(expr, x);
+    if (isFinite(y)) vertex(x, y);
+  }
+
+  endShape();
+}
+
+// =======================
+// 🖱️ INTERACTIONS
+// =======================
+function mousePressed() {
+  lastMouseX = mouseX;
+  lastMouseY = mouseY;
+  let mx = (mouseX - width / 2 - panX) / zoom;
+  let my = -(mouseY - height / 2 - panY) / zoom;
+
+  if (dist(mx, my, p2.x, p2.y) < hoversize) {
+    dragging = false;
+    dragging2 = true;
+    return;
+  }
+  if (dist(mx, my, p1.x, p1.y) < hoversize) {
+    dragging = false;
+    dragging1 = true;
+    return;
+  }
+
+  if (menuOn && abs(mouseX - width / 2) < 250 && abs(mouseY - height / 2) < 150) {
+    dragging = false;
+    return;
+  }
+  if (mouseX < 280 && mouseY < 100) {
+    dragging = false;
+    return;
+  }
+
+  dragging = true;
 }
 
 function mouseDragged() {
-  if (document.activeElement.tagName === "INPUT") return;
-
-  let mx = (mouseX - width/2 - panX) / zoom;
-
-  if (dragging1) p1.x = mx;
-  if (dragging2) p2.x = mx;
-
-  if (draggingGraph) {
+  if (dragging) {
     panX += mouseX - lastMouseX;
     panY += mouseY - lastMouseY;
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
   }
+
+  if (dragging1) {
+    p1.x += (mouseX - lastMouseX) / zoom;
+  }
+
+  if (dragging2) {
+    p2.x += (mouseX - lastMouseX) / zoom;
+  }
+
+  // ✅ Mise à jour une seule fois à la fin
+  lastMouseX = mouseX;
+  lastMouseY = mouseY;
 }
 
 function mouseReleased() {
+  dragging = false;
   dragging1 = false;
   dragging2 = false;
-  draggingGraph = false;
-  cursor("default");
 }
-
-function mouseWheel(event) {
-  let worldX = (mouseX - width/2 - panX) / zoom;
-  let worldY = -(mouseY - height/2 - panY) / zoom;
-
-  let zoomFactor = 1 - event.delta * 0.001;
-  zoom = constrain(zoom * zoomFactor, 20, 500);
-
-  let newScreenX = worldX * zoom;
-  let newScreenY = worldY * zoom;
-  let oldScreenX = worldX * (zoom / zoomFactor);
-  let oldScreenY = worldY * (zoom / zoomFactor);
-
-  panX += oldScreenX - newScreenX;
-  panY += -(oldScreenY - newScreenY);
-
-  return false;
-}
-
-
-
-
-function safeEval(x) {
-  try {
-    return exprFunc(x);
-  } catch {
-    return 0;
-  }
-}
-
-
-let pinchStartDist = null; // distance initiale entre 2 doigts
-let pinchCenter = null;    // centre du pinch
-
-function touchStarted() {
-  if (document.activeElement.tagName === "INPUT") return false;
-
-  if (touches.length === 1) {
-    // --- Un seul doigt : drag des points / graphe ---
-    let mx = (mouseX - width/2 - panX) / zoom;
-    let my = -(mouseY - height/2 - panY) / zoom;
-
-    let dA = dist(mx, my, p1.x, p1.y);
-    let dB = dist(mx, my, p2.x, p2.y);
-
-    if (dA < 0.2 && dA <= dB) {
-      dragging1 = true;
-    } else if (dB < 0.2 && dB < dA) {
-      dragging2 = true;
-    } else {
-      draggingGraph = true;
-      lastMouseX = mouseX;
-      lastMouseY = mouseY;
-      cursor("grabbing");
-    }
-  } else if (touches.length === 2) {
-    // --- Deux doigts : pinch zoom ---
-    pinchStartDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-    pinchCenter = {
-      x: (touches[0].x + touches[1].x) / 2,
-      y: (touches[0].y + touches[1].y) / 2
-    };
-  }
-  return false;
-}
-
-function touchMoved() {
-  if (document.activeElement.tagName === "INPUT") return false;
-
-  if (touches.length === 1) {
-    // --- Drag classique ---
-    let mx = (mouseX - width/2 - panX) / zoom;
-    if (dragging1) p1.x = mx;
-    if (dragging2) p2.x = mx;
-
-    if (draggingGraph) {
-      panX += mouseX - lastMouseX;
-      panY += mouseY - lastMouseY;
-      lastMouseX = mouseX;
-      lastMouseY = mouseY;
-    }
-  } else if (touches.length === 2 && pinchStartDist !== null) {
-    // --- Pinch zoom ---
-    let newDist = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-    let scaleFactor = newDist / pinchStartDist;
-
-    // Coordonnées monde du centre de pinch
-    let worldX = (pinchCenter.x - width/2 - panX) / zoom;
-    let worldY = -(pinchCenter.y - height/2 - panY) / zoom;
-
-    // Nouveau zoom
-    let newZoom = constrain(zoom * scaleFactor, 20, 500);
-
-    // Ajustement pan pour garder le centre fixe
-    let newScreenX = worldX * newZoom;
-    let newScreenY = worldY * newZoom;
-    let oldScreenX = worldX * zoom;
-    let oldScreenY = worldY * zoom;
-
-    panX += oldScreenX - newScreenX;
-    panY += -(oldScreenY - newScreenY);
-
-    zoom = newZoom;
-    pinchStartDist = newDist; // reset distance de référence
-  }
-
-  return false;
-}
-
-function touchEnded() {
-  dragging1 = false;
-  dragging2 = false;
-  draggingGraph = false;
-  pinchStartDist = null;
-  pinchCenter = null;
-  cursor("default");
-  return false;
-}
-

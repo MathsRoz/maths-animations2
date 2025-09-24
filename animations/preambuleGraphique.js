@@ -29,8 +29,10 @@ let themeBtn, menuButton;
 let darkMode = true; // ✅ thème par défaut
 let white, black, orange, red,lightgray, darkgray;
 
-function preambuleSetup(){
 
+
+function preambuleSetup(){
+  
  pixelDensity(1);
   createCanvas(windowWidth-10, windowHeight-10);
 
@@ -124,10 +126,26 @@ function preambuleSetup(){
   unitebox.class("checkbox-wrapper-2");
   unitebox.elt.querySelector("input").classList.add("ikxBAC");
 
+  let contEtiquette = createDiv();
+  contEtiquette.style("display", "flex");
+  contEtiquette.style("align-items", "center");  // ✅ aligne le texte et la case
+  contEtiquette.style("gap", "10px");
+  contEtiquette.parent(optionMenu);
+  let labEti = createSpan("Etiquettes (x,y) : ");
+  labEti.parent(contEtiquette);
+  labEti.style("flex-shrink", "0");
+  labEti.class("slider-label");
+  inputX = createInput("x");
+  inputX.parent(contEtiquette);
+  inputX.size(.5);
+  inputX.class("func-input");
+  inputY = createInput("y");
+  inputY.parent(contEtiquette);
+  inputY.size(1);
+  inputY.class("func-input");
 
-
-  panX=-200;
-  panY=200;
+  panX=0;
+  panY=0;
 
   couleur();
 
@@ -135,6 +153,8 @@ function preambuleSetup(){
   
   optionMenu.hide();
   
+  
+
 }
 
 
@@ -177,10 +197,12 @@ function drawAxes() {
   stroke(darkMode ? white  : black );
   fill(darkMode ? white  : black );
   strokeWeight(linesize);
-
+  
   textAlign(CENTER,CENTER);
 
   let step = getStep();
+
+  
 
   for (let i = -Math.floor((width/2+panX)/(zoom)/step)*step; i <= Math.floor((width/2-panX)/(zoom)/step)*step; i+=step) {
     if ( i !== 0) {
@@ -286,6 +308,18 @@ if (unitebox.checked()){
 line(-width, 0, width, 0);
 line(0, -height, 0, height);
 
+push();
+  scale(1,-1);
+  strokeWeight(0);
+  textSize(linesize*10);
+  textAlign(RIGHT);
+  textFont("Delius");
+  text(inputX.value(), (width/2-panX)/zoom-linesize*2,-linesize*5);
+  textAlign(LEFT)
+  text(inputY.value(), linesize*2,-(height/2+panY)/(zoom)+linesize*8);
+
+  pop();
+
 }
 
 
@@ -311,7 +345,10 @@ function isOverHTMLElement() {
 // =======================
 function mousePressed() {
   if (isOverHTMLElement()) return; // on ne bloque pas sliders/boutons
-
+  if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
+    dragging = false;
+    return;
+  }
   if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
     dragging = true;
     lastMouseX = mouseX;
@@ -325,11 +362,13 @@ function mouseDragged() {
     panY += mouseY - lastMouseY;
     lastMouseX = mouseX;
     lastMouseY = mouseY;
+    cursor('grab');
   }
 }
 
 function mouseReleased() {
   dragging = false;
+  cursor(ARROW);
 }
 
 function mouseWheel(event) {
@@ -338,7 +377,7 @@ function mouseWheel(event) {
   let worldY = -(mouseY - height / 2 - panY) / zoom;
 
   let factor = 1 - event.delta * 0.001;
-  zoom = constrain(zoom * factor, 10, 500);
+  zoom = constrain(zoom * factor, 1, 500);
 
   // correction pour garder la souris fixe
   let newScreenX = worldX * zoom;
@@ -401,11 +440,13 @@ function touchEnded(e) {
 // 📏 GRADUATIONS DYNAMIQUES
 // =======================
 function getStep() {
-  if (zoom>240) return 0.25
+  if (zoom>300) return 0.25;
   else if (zoom>150) return 0.5;
   else if (zoom > 40) return 1;
   else if (zoom > 20) return 5;
-  else return 10;
+  else if (zoom > 10) return 10;
+  else if (zoom > 5) return 20;
+  else return 50;
 }
 
 

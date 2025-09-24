@@ -79,6 +79,9 @@ function setup() {
 
 
   preambuleSetup();
+
+  panX=-200;
+  panY=200;
 }
 
 
@@ -123,15 +126,26 @@ function drawLines() {
   line(b,0,b,c);
   line(0,c,b,c);
   drawingContext.setLineDash([]);
-  textSize(30/zoom);
+  textSize(linesize*15);
   stroke(black);
   strokeWeight(3/zoom);
   scale(1,-1);
   fill(orange);
-  textAlign(TOP,TOP);
-  text("α",b,10/zoom);
-  textAlign(RIGHT,CENTER);
-  text("β",-10/zoom,-c);
+  if (c>=0){
+    textAlign(TOP,TOP);
+    text("α",b,10/zoom);
+  }
+  else{
+    textAlign(BOTTOM,BOTTOM);
+    text("α",b,-10/zoom);
+  }
+  if (b>=0){
+    textAlign(RIGHT,CENTER);
+    text("β",-10/zoom,-c);}
+  else{
+    textAlign(LEFT,CENTER);
+    text("β",10/zoom,-c);
+  }
 }
 
 
@@ -152,9 +166,9 @@ function showfunc(){
   translate(-width/2 - panX, -height/2 - panY);
   textAlign(LEFT,TOP);
   push();
-  textFont("Delius Swash Caps");
+  textFont("Delius");
   let fonct;
-  fonct = a===0 ? "f(x)=0":b===0 ?"f(x)="+A+"x²"+C : "f(x)="+A+"(x"+B+")²"+C;
+  fonct = a===0 ? c===0 ? "f(x)=0" :"f(x)="+C :b===0 ?"f(x)="+A+"x²"+C : "f(x)="+A+"(x"+B+")²"+C;
   text(fonct,20,180);
   pop();
 }

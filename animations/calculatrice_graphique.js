@@ -27,8 +27,8 @@ function setup() {
   // === Menu fonctions ===
   funcMenu = createDiv();
   funcMenu.style("position", "absolute");
-funcMenu.style("top", "50px");
-funcMenu.style("left", "0px");
+  funcMenu.style("top", "50px");
+  funcMenu.style("left", "0px");
 
   funcMenu.style("gap", "12px");
   funcMenu.style("padding", "12px");

@@ -32,7 +32,7 @@ function setup() {
   sliderU0 = createSlider(-5, 5, 2, 0.1);
   sliderU0.parent(contU0);
   sliderU0.class("p5slider");
-  sliderU0.size(windowWidth/5);
+  sliderU0.size(250);
   valU0Span = createSpan(sliderU0.value());
   valU0Span.parent(contU0);
   valU0Span.style("min-width", "40px");
@@ -48,7 +48,7 @@ function setup() {
   
   sliderN = createSlider(-5, 5, 3, 0.1);
   sliderN.class("p5slider");
-  sliderN.size(windowWidth/5);
+  sliderN.size(250);
   let labN = createSpan("b :");
   labN.class("slider-label");
   labN.parent(contN);
@@ -68,6 +68,9 @@ function setup() {
   contC.parent(panel);
 
   preambuleSetup();
+
+  panX=0;
+  panY=200;
 }
 
 
@@ -92,7 +95,7 @@ function drawFunction() {
   b=sliderN.value();
   stroke(323,72,85);
   stroke(red);
-  strokeWeight(3/zoom);
+  strokeWeight(linesize);
   noFill();
   beginShape();
   let step = 1/zoom;
@@ -121,7 +124,7 @@ function showfunc(){
   push();
   textFont("Delius Swash Caps");
   let fonct;
-  fonct = a===0 ? "f(x)=0":b===0 ?"f(x)="+B : "f(x)="+A+"x"+B;
+  fonct = a===0 ? "f(x)="+B:b===0 ?"f(x)="+a+"x" : "f(x)="+A+"x"+B;
   text(fonct,20,130);
   
   pop();
@@ -137,7 +140,7 @@ function mousePressed() {
   if (menuOn && abs(mouseX-width/2)<160 && abs(mouseY-height/2)<160) {
     dragging = false;
   }
-  if (mouseX<240 && mouseY<100){
+  if (mouseX<320 && mouseY<120){
     dragging = false;
   }
 }
