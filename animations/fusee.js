@@ -16,7 +16,7 @@ let labelVitesse;
 let a, b, fa, fb, vitesse; // ✅ valeurs de la sécante
 
 function preload() {
-  img = loadImage('/images/fusee_logo.png');
+  img = loadImage('images/fusee_logo.png');
 }
 
 function setup() {
