@@ -3,7 +3,7 @@ let inputFunc;
 let p1, p2;
 let dragging1 = false, dragging2 = false;
 let hover1 = false, hover2 = false;
-let hoversize = 15/zoom;
+let hoversize = linesize*100;
 
 function setup() {
   // ⚡ Initialise zoom, pan, thème, options, etc.
@@ -69,8 +69,10 @@ function drawPoints() {
 function hover() {
   let mx = (mouseX - width / 2 - panX) / zoom;
   let my = -(mouseY - height / 2 - panY) / zoom;
+  hoversize = linesize*5;
   hover1 = dist(mx, my, p1.x, p1.y) < hoversize;
   hover2 = dist(mx, my, p2.x, p2.y) < hoversize;
+  hover1 || hover2 ? cursor(MOVE): cursor(ARROW) ;
 }
 
 function secante(expr) {
@@ -155,7 +157,7 @@ function mousePressed() {
   lastMouseY = mouseY;
   let mx = (mouseX - width / 2 - panX) / zoom;
   let my = -(mouseY - height / 2 - panY) / zoom;
-
+  hoversize = linesize*5;
   if (dist(mx, my, p2.x, p2.y) < hoversize) {
     dragging = false;
     dragging2 = true;
@@ -204,4 +206,5 @@ function mouseReleased() {
   dragging = false;
   dragging1 = false;
   dragging2 = false;
+  cursor(ARROW);
 }

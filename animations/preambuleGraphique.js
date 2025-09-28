@@ -365,7 +365,7 @@ function mouseDragged() {
     panY += mouseY - lastMouseY;
     lastMouseX = mouseX;
     lastMouseY = mouseY;
-    cursor('grab');
+    cursor(MOVE);
   }
 }
 

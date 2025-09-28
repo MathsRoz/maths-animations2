@@ -84,6 +84,8 @@ function setup() {
   labelVitesse.style("left", "50%");         // centre horizontal
   labelVitesse.style("transform", "translateX(-50%)");
   labelVitesse.parent(cont);
+
+  
 }
 
 
@@ -225,7 +227,20 @@ function drawSec(expr) {
   drawingContext.setLineDash([]);
   
   line(a,fa,b,fb);
-  showSecante ? labelVitesse.html("vitesse = " +  (fb-fa).toPrecision(4)+"/"+(b-a).toPrecision(4) + " = " + round(vitesse*3600) + " km/h") : labelVitesse.html("") 
+
+  let num = (fb - fa).toPrecision(4);
+let den = (b - a).toPrecision(4);
+let frac = `
+  <span style="display:inline-block; text-align:center">
+    <span style="border-bottom:1px solid; display:block">${num}</span>
+    <span style="display:block">${den}</span>
+  </span>
+`;
+
+
+  showSecante ? labelVitesse.html(
+  `vitesse = ${frac} = ${round(vitesse*3600)} km/h`
+) : labelVitesse.html("") 
 }
 
 function hover(){
@@ -257,17 +272,17 @@ function mousePressed() {
   let mx = (mouseX - width / 2 - panX) / zoom;
   let my = -(mouseY - height / 2 - panY) / zoom;
 
-  if (hover1) {
-    dragging = false;
-    dragging1 = true;
-    return;
-  }
+  
   if (hover2) {
     dragging = false;
     dragging2 = true;
     return;
   }
-
+  if (hover1) {
+    dragging = false;
+    dragging1 = true;
+    return;
+  }
   if (menuOn && abs(mouseX - width / 2) < 250 && abs(mouseY - height / 2) < 150) {
     dragging = false;
     return;

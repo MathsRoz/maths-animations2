@@ -204,10 +204,12 @@ function mouseDragged() {
   if (dragging) {
     panX += mouseX - lastMouseX;
     panY += mouseY - lastMouseY;
+    cursor(MOVE);
   }
 
   if (dragging1) {
-    p1.x += (mouseX - lastMouseX) / zoom;
+    p1.x += (mouseX - lastMouseX) / zoom; 
+    cursor('grab');
   }
 
 
@@ -220,4 +222,5 @@ function mouseDragged() {
 function mouseReleased() {
   dragging = false;
   dragging1 = false;
+  cursor(ARROW);
 }
