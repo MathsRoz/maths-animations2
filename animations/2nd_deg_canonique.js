@@ -106,15 +106,17 @@ function drawFunction() {
   a=sliderU0.value();
   b=sliderN.value();
   c=sliderC.value();
+  let wmax = (width/2-panX)/zoomX;
+  let wmin = -(width/2+panX)/zoomX;
   stroke(323,72,85);
   stroke(red);
   strokeWeight(linesize);
   noFill();
   beginShape();
-  let step = 1/zoom;
-  for (let x = -(width/2+panX)/(zoom); x < (width/2-panX)/(zoom); x += step) {
+  for (let x =wmin; x<wmax;x+=.5/zoomX ) {
     let y = a*(x-b)*(x-b)+c;
-    if (isFinite(y)) vertex(x, y);
+    pos=worldtoScreen(x,y);
+    if (isFinite(y)) vertex(pos[0],pos[1]);
   }
   endShape();
 }
@@ -123,28 +125,28 @@ function drawLines() {
   
   drawingContext.setLineDash([linesize, linesize*2]);
   stroke(orange);
-  line(b,0,b,c);
-  line(0,c,b,c);
+  line(b*zoomX,0,b*zoomX,c*zoomY);
+  line(0,c*zoomY,b*zoomX,c*zoomY);
   drawingContext.setLineDash([]);
   textSize(linesize*15);
-  stroke(black);
-  strokeWeight(3/zoom);
+  darkMode ? stroke(black) :stroke(white);
+  strokeWeight(10);
   scale(1,-1);
   fill(orange);
   if (c>=0){
     textAlign(TOP,TOP);
-    text("α",b,10/zoom);
+    text("α",b*zoomX,10);
   }
   else{
     textAlign(BOTTOM,BOTTOM);
-    text("α",b,-10/zoom);
+    text("α",b*zoomX,-10);
   }
   if (b>=0){
     textAlign(RIGHT,CENTER);
-    text("β",-10/zoom,-c);}
+    text("β",-10,-c*zoomY);}
   else{
     textAlign(LEFT,CENTER);
-    text("β",10/zoom,-c);
+    text("β",10,-c*zoomY);
   }
 }
 
@@ -159,10 +161,10 @@ function showfunc(){
   a===1 ? A="" : A=str(a);
   stroke(darkMode ? white : black);
   fill(darkMode ? white : black);
-  strokeWeight(6);
+  strokeWeight(10);
   stroke(darkMode ? black: white);
   textSize(width/20);
-  scale(1/zoom, 1/zoom);
+
   translate(-width/2 - panX, -height/2 - panY);
   textAlign(LEFT,TOP);
   push();
@@ -183,8 +185,28 @@ function mousePressed() {
   
   if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
     dragging = false;
+   
   }
   if (mouseX<280 && mouseY<200){
     dragging = false;
+    
   }
-}
+
+if (isOverHTMLElement()) return; // on ne bloque pas sliders/boutons
+  if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
+    dragging = false;
+    return;
+  }
+
+  let posmx = mouseX-width/2-panX;
+  let posmy = mouseY-height/2-panY;
+  if (abs(posmx)<linesize && abs(posmy)>40){
+    resizeY=true;
+    lastMouseX = mouseX;
+    return;}
+  else if (abs(posmy)<linesize && abs(posmx)>40){
+    resizeX=true;
+    lastMouseY = mouseY;
+    return;}
+    
+  }

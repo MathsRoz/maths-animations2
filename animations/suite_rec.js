@@ -118,26 +118,29 @@ function draw() {
 }
 
 function drawIden(){
-let xmin = -(width/2+panX)/(zoom);
-let ymin = -(height/2-panY)/(zoom);
-let xmax = (width/2-panX)/(zoom);
-let ymax = (height/2+panY)/(zoom);
+let xmin = -(width/2+panX);
+let ymin = -(height/2+panY);
+let xmax = (width/2-panX);
+let ymax = (height/2+panY);
 let minimum = min(xmin,ymin);
 let maximum = max(xmax,ymax);
-line(minimum,minimum,maximum,maximum);
+line(minimum*zoomX,minimum*zoomY,maximum*zoomX,maximum*zoomY);
 }
 
 function drawFunction() {
+  let wmax = (width/2-panX)/zoomX;
+  let wmin = -(width/2+panX)/zoomX;
   if (!exprFunc) return;
   stroke(323,72,85);
   stroke(red)
   strokeWeight(linesize);
   noFill();
   beginShape();
-  let step = 1/zoom;
-  for (let x = -20*width/(zoom); x < 20*width/(zoom); x += step) {
+
+  for (let x =wmin; x<wmax;x+=.5/zoomX ) {
     let y = exprFunc(x);
-    if (isFinite(y)) vertex(x, y);
+    pos=worldtoScreen(x,y);
+    if (isFinite(y)) vertex(pos[0],pos[1]);
   }
   endShape();
 }
@@ -149,16 +152,16 @@ function drawun(){
   scale(1,-1);
   fill(orange);
   stroke(black);
-  circle(u,0,12/zoom);
+  circle(u*zoomX,0,2*linesize+10);
   stroke(orange)
   fill(orange);
-  circle(u,0,8/zoom);
-  strokeWeight(4/zoom);
+  circle(u*zoomX,0,2*linesize);
+
   stroke(black);
   textAlign(CENTER,TOP);
   textSize(fsize);
   textFont("delius");
-  text("u₀",u,10/zoom);
+  text("u₀",u*zoomX,10);
   pop();
 }
 
@@ -175,10 +178,10 @@ function drawCobweb() {
   
   
   let fx = exprFunc(x);
-  line(x, y, x, n<1 ? y+(fx-y)*(n%1) : fx);
+  line(x*zoomX, y*zoomY, x*zoomX, n<1 ? (y+(fx-y)*(n%1))*zoomY : fx*zoomY);
   for (let i = 1; i < n ; i++) {
     
-    line(x, fx, i>n-.5 ? x+(fx-x)*2*(n%0.5): fx, fx);
+    line(x*zoomX, fx*zoomY, i>n-.5 ? (x+(fx-x)*2*(n%0.5))*zoomX: fx*zoomX, fx*zoomY);
     y = fx;
     x = fx;
     fx = exprFunc(x);
@@ -190,24 +193,24 @@ function drawCobweb() {
     strokeWeight(linesize);
       drawingContext.setLineDash([linesize, linesize*2]);
       stroke(vert);
-      line(x, y, x, 0) 
+      line(x*zoomX, y*zoomY, x*zoomX, 0) 
     scale(1,-1);
     
     drawingContext.setLineDash([]);
     textAlign(CENTER,TOP);
     strokeWeight(linesize);
-    textSize(fsize);
+    textSize(fsize*2);
     stroke(black);
     fill(vert);
     textFont("delius");
-    text(("u"),x,10/zoom);
-    textSize(fsize/2);
+    text(("u"),x*zoomX,10);
+    textSize(fsize);
     textAlign(LEFT,LEFT);
-    text((i),x+5/zoom+fsize/5,10/zoom+fsize/2);
+    text((i),x*zoomX+fsize/2,10+fsize);
 
     pop();
     }
-    line(x, y, x, i>n-1 && n%1>.5? x+(fx-x)*2*((n-.5)%0.5): i>n-1 ? NaN:fx );
+    line(x*zoomX, y*zoomY, x*zoomX, i>n-1 && n%1>.5? (x+(fx-x)*2*((n-.5)%0.5))*zoomY: i>n-1 ? NaN:fx*zoomY );
     
     
   }
@@ -222,21 +225,55 @@ function isOverElement(elt) {
 }
 
 function mousePressed() {
+  
   if (isOverElement(inputFunc.elt) || 
       isOverElement(sliderU0.elt) || 
       isOverElement(sliderN.elt)) {
     return;
   }
-  dragging = true;
+
+
   lastMouseX = mouseX;
   lastMouseY = mouseY;
+
+
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    dragging = true;
+  }
   if (mouseX<300 && mouseY<200){
     dragging =false;
+    return;
   }
-
+  
   overOption();
 
+  if (menuOn && abs(mouseX-width/2)<250 && abs(mouseY-height/2)<150) {
+    dragging = false;
+    return;
+  }
+
+
+  let posmx = mouseX-width/2-panX;
+  let posmy = mouseY-height/2-panY;
+  if (abs(posmx)<linesize && abs(posmy)>40){
+    resizeY=true;
+    dragging = false;
+    lastMouseX = mouseX;
+    return;}
+  else if (abs(posmy)<linesize && abs(posmx)>40){
+    resizeX=true;
+    dragging = false;
+    lastMouseY = mouseY;
+    return;}
+
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    dragging = true;
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+  }
+
   
+
 }
 
 
